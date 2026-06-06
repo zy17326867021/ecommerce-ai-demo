@@ -205,6 +205,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .cat-confirm-btn{font-size:12px;color:#fff;background:#e4393c;border:none;padding:4px 16px;border-radius:6px;cursor:pointer;font-weight:500;transition:opacity .15s}
 .cat-confirm-btn:hover{opacity:.85}
 .cat-confirm-btn:disabled{background:#c9cdd4;cursor:not-allowed}
+
+/* Drill-down card */
+.drill-card{background:#fff;border:1px solid #e5e6eb;border-radius:10px;padding:12px 16px;margin:8px 0}
+.drill-title{font-size:14px;font-weight:600;color:#1d2129;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.drill-list{display:flex;flex-direction:column;gap:4px}
+.drill-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f7f8fa;border-radius:6px;font-size:12px}
+.drill-rank{font-size:11px;font-weight:700;color:#fff;background:#00893e;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drill-name{font-weight:600;color:#1d2129;min-width:80px}
+.drill-change{font-size:12px;font-weight:600;color:#00893e}
+.drill-meta{font-size:11px;color:#86909c;margin-left:auto}
+
+/* Chart */
+.chart-wrap{background:#fff;border:1px solid #e5e6eb;border-radius:10px;padding:16px;margin:8px 0}
+.chart-title{font-size:14px;font-weight:600;color:#1d2129;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.chart-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.chart-label{width:72px;text-align:right;color:#4e5969;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.chart-bar-bg{flex:1;height:20px;background:#f2f3f5;border-radius:4px;overflow:hidden;position:relative}
+.chart-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:10px;font-weight:600;color:#fff;min-width:24px}
+.chart-bar-fill.up{background:linear-gradient(90deg,#52c41a,#00893e)}
+.chart-bar-fill.down{background:linear-gradient(90deg,#ff7875,#f53f3f)}
+.chart-bar-fill.new{background:linear-gradient(90deg,#ffa940,#d46b08)}
+.chart-val{font-size:10px;color:#86909c;width:60px;flex-shrink:0;text-align:right}
+
+/* Attribution */
+.attr-card{background:#fff;border:1px solid #e5e6eb;border-radius:10px;padding:14px 16px;margin:8px 0}
+.attr-title{font-size:14px;font-weight:600;color:#1d2129;margin-bottom:4px}
+.attr-sub{font-size:12px;color:#86909c;margin-bottom:10px}
+.attr-kpi{display:flex;gap:8px;margin-bottom:10px}
+.attr-kpi-item{flex:1;background:#f7f8fa;border-radius:8px;padding:8px 10px;text-align:center}
+.attr-kpi-label{font-size:10px;color:#86909c;margin-bottom:2px}
+.attr-kpi-val{font-size:16px;font-weight:700;color:#1d2129}
+.attr-kpi-val.red{color:#f53f3f}
+.attr-kpi-val.green{color:#00893e}
+.attr-section{font-size:13px;font-weight:600;color:#1d2129;margin:10px 0 6px;padding-top:8px;border-top:1px solid #f2f3f5}
+.attr-reason{font-size:12px;color:#4e5969;line-height:1.7;padding-left:10px;border-left:3px solid #e5e6eb;margin:6px 0}
+.attr-compare{margin:8px 0}
+.attr-compare-row{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;border-bottom:1px solid #f7f8fa}
+.attr-compare-row:last-child{border-bottom:none}
+.attr-cmp-name{width:80px;font-weight:500;color:#1d2129}
+.attr-cmp-bar{flex:1;height:14px;background:#f2f3f5;border-radius:3px;overflow:hidden}
+.attr-cmp-fill{height:100%;border-radius:3px}
+.attr-cmp-val{width:50px;text-align:right;font-size:11px;color:#86909c}
 </style>
 </head>
 <body>
@@ -637,11 +679,126 @@ function showFileCard(){
 </div>
 <div style="margin-top:12px;font-size:12px;font-weight:500;color:#1d2129">还想继续分析？</div>
 <div class="next-steps">
-<div class="next-step-item" onclick="alert('下钻分析功能开发中…')"><span class="ns-num">1</span>"帮我看看手机类目下哪些词在涨" → 下钻到具体趋势</div>
-<div class="next-step-item" onclick="alert('图表功能开发中…')"><span class="ns-num">2</span>"把这些数据做成图表" → 生成可视化趋势图</div>
-<div class="next-step-item" onclick="alert('归因分析功能开发中…')"><span class="ns-num">3</span>"帮我分析为什么苹果手机排名下降了" → 业务归因分析</div>
+<div class="next-step-item" onclick="followDrill()"><span class="ns-num">1</span>"帮我看看手机类目下哪些词在涨" → 下钻到具体趋势</div>
+<div class="next-step-item" onclick="followChart()"><span class="ns-num">2</span>"把这些数据做成图表" → 生成可视化趋势图</div>
+<div class="next-step-item" onclick="followAttr()"><span class="ns-num">3</span>"帮我分析为什么苹果手机排名下降了" → 业务归因分析</div>
 </div>`);
   busy=false;
+}
+
+// ====== Follow-up 1: Drill Down ======
+function followDrill(){
+  if(busy)return; busy=true;
+  addMsg('user','帮我看看手机类目下哪些词在涨',()=>typing(()=>{
+    // Filter side panel to "up"
+    curFilter='up';
+    document.querySelectorAll('.toolbar-filter').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.toolbar-filter[data-f="up"]').classList.add('active');
+    renderSideTable();
+
+    const upKw=KW.filter(k=>k.ch==='up').sort((a,b)=>b.d-a.d);
+    const topItems=upKw.slice(0,5).map((k,i)=>`<div class="drill-item">
+<div class="drill-rank">${i+1}</div>
+<div class="drill-name">${k.k}</div>
+<div class="drill-change">🟩 上升 ${k.d} 名</div>
+<div class="drill-meta">UV ${k.uv} · 蓝海值 ${k.bl}</div>
+</div>`).join('');
+
+    addMsg('ai',`
+<div class="drill-card">
+<div class="drill-title">📈 手机类目 · 排名上升的热词（共 ${upKw.length} 个）</div>
+<div style="font-size:12px;color:#4e5969;margin-bottom:8px;line-height:1.6">
+以下关键词排名正在上升，按上升幅度排序。<strong>折叠屏手机</strong>上升 83 名，涨幅最大，蓝海值高达 18.76，是当前最值得关注的机会词。
+</div>
+<div class="drill-list">${topItems}</div>
+</div>
+<div style="font-size:12px;color:#86909c;margin-top:6px">💡 右侧表格已自动筛选为"上升"关键词，可查看全部 ${upKw.length} 个上升词。</div>
+<div style="margin-top:10px;font-size:12px;font-weight:500;color:#1d2129">想继续深入？</div>
+<div class="next-steps">
+<div class="next-step-item" onclick="alert('竞品分析功能开发中…')"><span class="ns-num">1</span>"折叠屏手机这个词的竞品表现怎么样"</div>
+<div class="next-step-item" onclick="alert('趋势预测功能开发中…')"><span class="ns-num">2</span>"预测下周一这些词还会继续涨吗"</div>
+</div>`);
+    busy=false;
+  }));
+}
+
+// ====== Follow-up 2: Chart ======
+function followChart(){
+  if(busy)return; busy=true;
+  addMsg('user','把这些数据做成图表',()=>typing(()=>{
+    const top15=KW.slice(0,15);
+    const maxD=Math.max(...top15.map(k=>k.d||1));
+    const bars=top15.map(k=>{
+      const pct=Math.max(Math.abs(k.d)/maxD*100,8);
+      let cls=k.ch==='up'?'up':k.ch==='down'?'down':'new';
+      let label=k.ch==='up'?`+${k.d}`:k.ch==='down'?`-${k.d}`:k.ch==='new'?'NEW':'0';
+      return`<div class="chart-bar-row">
+<div class="chart-label">${k.k}</div>
+<div class="chart-bar-bg"><div class="chart-bar-fill ${cls}" style="width:${pct}%">${label}</div></div>
+<div class="chart-val">排名 ${k.lr}</div>
+</div>`;
+    }).join('');
+
+    addMsg('ai',`
+<div class="chart-wrap">
+<div class="chart-title">📊 Top15 热词排名变化柱状图</div>
+<div style="font-size:11px;color:#86909c;margin-bottom:10px">柱状图展示排名变化幅度，<span style="color:#00893e">绿色=上升</span> <span style="color:#f53f3f">红色=下降</span> <span style="color:#d46b08">橙色=新上榜</span></div>
+${bars}
+</div>
+<div style="font-size:12px;color:#86909c;margin-top:4px">💡 折叠屏手机的柱子最长，说明它的排名变化幅度最大（上升 83 名）。</div>
+<div style="margin-top:10px;font-size:12px;font-weight:500;color:#1d2129">还需要其他图表？</div>
+<div class="next-steps">
+<div class="next-step-item" onclick="alert('UV趋势图功能开发中…')"><span class="ns-num">1</span>"帮我画一个 UV 趋势折线图"</div>
+<div class="next-step-item" onclick="alert('饼图功能开发中…')"><span class="ns-num">2</span>"做一个上升/下降/持平的占比饼图"</div>
+<div class="next-step-item" onclick="alert('导出图片功能开发中…')"><span class="ns-num">3</span>"把这个图表导出为图片"</div>
+</div>`);
+    busy=false;
+  }));
+}
+
+// ====== Follow-up 3: Attribution ======
+function followAttr(){
+  if(busy)return; busy=true;
+  addMsg('user','帮我分析为什么苹果手机排名下降了',()=>typing(()=>{
+    addMsg('ai',`
+<div class="attr-card">
+<div class="attr-title">🔍 归因分析：「苹果手机」排名下降原因</div>
+<div class="attr-sub">上周排名 3 → 上上周排名 1，下降 2 名</div>
+
+<div class="attr-kpi">
+<div class="attr-kpi-item"><div class="attr-kpi-label">UV 变化</div><div class="attr-kpi-val red">-12.3%</div></div>
+<div class="attr-kpi-item"><div class="attr-kpi-label">点击率</div><div class="attr-kpi-val">68.90%</div></div>
+<div class="attr-kpi-item"><div class="attr-kpi-label">蓝海值</div><div class="attr-kpi-val">15.87</div></div>
+<div class="attr-kpi-item"><div class="attr-kpi-label">曝光变化</div><div class="attr-kpi-val red">-8.7%</div></div>
+</div>
+
+<div class="attr-section">📋 可能原因分析</div>
+<div class="attr-reason"><strong>1. 竞品挤压：</strong>华为手机排名持平（第2），小米手机上升1名，分流了"苹果手机"的搜索流量。华为 Mate 系列近期发布新机，带动了品牌词搜索热度。</div>
+<div class="attr-reason"><strong>2. 季节性因素：</strong>618 大促前期，用户更倾向搜索"手机"等通用词进行比较，品牌词搜索热度自然回落。</div>
+<div class="attr-reason"><strong>3. 新品周期：</strong>iPhone 当前处于产品周期后半段，用户对新一代 iPhone 的搜索可能转移到了"iPhone 17"等新型号词。</div>
+
+<div class="attr-section">⚔️ 竞品对比（排名变化）</div>
+<div class="attr-compare">
+<div class="attr-compare-row"><div class="attr-cmp-name" style="color:#f53f3f;font-weight:700">苹果手机</div><div class="attr-cmp-bar"><div class="attr-cmp-fill" style="width:60%;background:#f53f3f"></div></div><div class="attr-cmp-val" style="color:#f53f3f">↓ 下降 2</div></div>
+<div class="attr-compare-row"><div class="attr-cmp-name">华为手机</div><div class="attr-cmp-bar"><div class="attr-cmp-fill" style="width:30%;background:#165dff"></div></div><div class="attr-cmp-val" style="color:#165dff">→ 持平</div></div>
+<div class="attr-compare-row"><div class="attr-cmp-name" style="color:#00893e">小米手机</div><div class="attr-cmp-bar"><div class="attr-cmp-fill" style="width:40%;background:#00893e"></div></div><div class="attr-cmp-val" style="color:#00893e">↑ 上升 1</div></div>
+<div class="attr-compare-row"><div class="attr-cmp-name" style="color:#00893e">折叠屏手机</div><div class="attr-cmp-bar"><div class="attr-cmp-fill" style="width:100%;background:#00893e"></div></div><div class="attr-cmp-val" style="color:#00893e">↑ 上升 83</div></div>
+</div>
+
+<div class="attr-section">💡 建议动作</div>
+<div style="font-size:12px;color:#4e5969;line-height:1.8">
+1. 关注「折叠屏手机」趋势，考虑布局折叠屏品类<br>
+2. 监测"iPhone 17"等新型号词，提前做搜索卡位<br>
+3. 618 期间加大通用词"手机"的投放，弥补品牌词流量缺口
+</div>
+</div>
+<div style="margin-top:10px;font-size:12px;font-weight:500;color:#1d2129">还想分析其他词？</div>
+<div class="next-steps">
+<div class="next-step-item" onclick="alert('多词对比功能开发中…')"><span class="ns-num">1</span>"帮我对比华为手机和小米手机的趋势"</div>
+<div class="next-step-item" onclick="alert('历史分析功能开发中…')"><span class="ns-num">2</span>"看看苹果手机最近4周的排名走势"</div>
+</div>`);
+    busy=false;
+  }));
 }
 
 // ====== Welcome ======
