@@ -173,6 +173,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .loading-spinner{width:32px;height:32px;border:3px solid #e5e6eb;border-top-color:#e4393c;border-radius:50%;animation:spin .8s linear infinite}
 .loading-text{font-size:13px;color:#86909c}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Category Filter Component */
+.cat-filter{background:#fff;border:1px solid #e5e6eb;border-radius:10px;overflow:hidden;margin:10px 0 4px;font-size:12px}
+.cat-filter-head{display:flex;align-items:center;border-bottom:1px solid #e5e6eb;background:#fafafa}
+.cat-filter-tab{padding:7px 16px;font-size:12px;font-weight:600;color:#1d2129;border-bottom:2px solid #e4393c;background:#fff;cursor:default}
+.cat-filter-tab.inactive{color:#86909c;font-weight:400;border-bottom-color:transparent;background:transparent}
+.cat-filter-search{margin-left:auto;padding:6px 12px;display:flex;align-items:center;gap:6px}
+.cat-filter-search input{width:120px;height:26px;border:1px solid #e5e6eb;border-radius:4px;padding:0 8px;font-size:12px;color:#1d2129;outline:none;background:#f7f8fa}
+.cat-filter-search input:focus{border-color:#165dff;background:#fff}
+.cat-filter-search input::placeholder{color:#c9cdd4}
+.cat-filter-body{display:flex;min-height:180px;max-height:240px}
+.cat-col{flex:1;border-right:1px solid #f2f3f5;overflow-y:auto;padding:4px 0}
+.cat-col:last-child{border-right:none}
+.cat-col::-webkit-scrollbar{width:3px}
+.cat-col::-webkit-scrollbar-thumb{background:#e5e6eb;border-radius:2px}
+.cat-col-label{font-size:10px;color:#86909c;padding:4px 12px 2px;font-weight:600;letter-spacing:.5px}
+.cat-item{display:flex;align-items:center;padding:5px 12px;cursor:pointer;transition:background .1s;gap:6px;position:relative}
+.cat-item:hover{background:#f7f8fa}
+.cat-item.active{background:#fff5f5;color:#e4393c}
+.cat-item.active .cat-check{border-color:#e4393c;background:#e4393c}
+.cat-item.active .cat-check::after{content:'✓';color:#fff;font-size:9px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.cat-check{width:14px;height:14px;border:1.5px solid #c9cdd4;border-radius:3px;flex-shrink:0;position:relative;transition:all .15s}
+.cat-name{flex:1;font-size:12px;color:#1d2129;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-item.active .cat-name{color:#e4393c;font-weight:600}
+.cat-arrow{font-size:10px;color:#c9cdd4;flex-shrink:0}
+.cat-item.active .cat-arrow{color:#e4393c}
+.cat-confirm-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-top:1px solid #e5e6eb;background:#fafafa}
+.cat-path{font-size:11px;color:#86909c}
+.cat-path strong{color:#e4393c;font-weight:600}
+.cat-confirm-btn{font-size:12px;color:#fff;background:#e4393c;border:none;padding:4px 16px;border-radius:6px;cursor:pointer;font-weight:500;transition:opacity .15s}
+.cat-confirm-btn:hover{opacity:.85}
+.cat-confirm-btn:disabled{background:#c9cdd4;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -375,31 +407,122 @@ function pick1(n){
   }
 }
 
-// ====== Step 2: Clarify ======
+// ====== Step 2: Category Filter ======
+const CAT_L1=["手机通讯","电脑办公","家用电器","数码产品","图书","食品生鲜","美妆护肤","服饰内衣","运动户外","家居家装","母婴玩具","汽车用品"];
+const CAT_L2={"手机通讯":["手机","手机配件","对讲机","运营商"],"电脑办公":["笔记本","台式机","平板电脑","电脑配件","外设"],"家用电器":["空调","冰箱","洗衣机","电视","厨房电器","生活电器"],"数码产品":["耳机","相机","智能手表","音箱","存储设备"]};
+const CAT_L3={"手机":["手机","游戏手机","拍照手机","老人手机","学生手机"],"手机配件":["手机壳","手机膜","数据线","充电器","充电宝"],"空调":["壁挂式空调","柜式空调","中央空调","移动空调"],"笔记本":["轻薄本","游戏本","商务本","创意PC"],"耳机":["有线耳机","蓝牙耳机","头戴式耳机","运动耳机"]};
+
+let catSelect=[null,null,null];
+
 function step2_clarify(){
-  addMsg('ai',`"手机"可以作为<strong>类目</strong>筛选，也可以作为<strong>关键词</strong>匹配，你想要的哪种？
-<table class="msg-table">
-<thead><tr><th style="width:80px">选项</th><th>含义</th><th>举例</th></tr></thead>
-<tbody>
-<tr class="clickable-row" onclick="pickClarify('cat')"><td><span class="opt-key">A</span> 按类目筛选</td><td>只看"手机"商品分类下的所有热词</td><td style="color:#86909c">手机通讯-手机-手机</td></tr>
-<tr class="clickable-row" onclick="pickClarify('kw')"><td><span class="opt-key">B</span> 按关键词匹配</td><td>在所有类目中找包含"手机"的热词</td><td style="color:#86909c">"手机壳" "手机膜" "5G手机"</td></tr>
-</tbody></table>`);
+  catSelect=[null,null,null];
+  addMsg('ai',`请从下方类目树中选择你要分析的类目，逐级点击即可筛选：
+${buildCatFilter()}`);
   busy=false;
+  renderCatCols();
 }
 
-function pickClarify(t){
-  if(busy)return; busy=true; disableOpts();
-  if(t==='cat'){
-    addMsg('user','A 按类目',()=>typing(()=>{
-      addMsg('ai',`收到！即将为你分析 <strong>手机通讯-手机-手机</strong> 类目的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>正在查询，请稍等约 30 秒 ⏳`);
-      busy=false; setTimeout(runQuery,500);
-    }));
+function buildCatFilter(){
+  return `<div class="cat-filter" id="catFilter">
+<div class="cat-filter-head">
+  <div class="cat-filter-tab">品类</div>
+  <div class="cat-filter-tab inactive">全部</div>
+  <div class="cat-filter-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c9cdd4" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="请输入" id="catSearchInput" oninput="onCatSearch()">
+  </div>
+</div>
+<div class="cat-filter-body" id="catBody">
+  <div class="cat-col" id="catCol1"><div class="cat-col-label">一级类目</div></div>
+  <div class="cat-col" id="catCol2"><div class="cat-col-label">二级类目</div></div>
+  <div class="cat-col" id="catCol3"><div class="cat-col-label">三级类目</div></div>
+</div>
+<div class="cat-confirm-bar">
+  <div class="cat-path" id="catPath">请选择类目</div>
+  <button class="cat-confirm-btn" id="catConfirmBtn" disabled onclick="confirmCat()">确认选择</button>
+</div>
+</div>`;
+}
+
+function renderCatCols(){
+  const c1=$('catCol1'), c2=$('catCol2'), c3=$('catCol3');
+  const q=($('catSearchInput').value||'').trim();
+
+  // Column 1
+  let items1=CAT_L1;
+  if(q) items1=items1.filter(n=>n.includes(q));
+  c1.innerHTML='<div class="cat-col-label">一级类目</div>'+items1.map(n=>{
+    const isActive=catSelect[0]===n;
+    const hasSub=!!CAT_L2[n];
+    return`<div class="cat-item${isActive?' active':''}" onclick="clickCat(0,'${n}')"><div class="cat-check"></div><div class="cat-name">${n}</div>${hasSub?'<div class="cat-arrow">›</div>':''}</div>`;
+  }).join('');
+
+  // Column 2
+  if(catSelect[0] && CAT_L2[catSelect[0]]){
+    let items2=CAT_L2[catSelect[0]];
+    if(q) items2=items2.filter(n=>n.includes(q));
+    c2.innerHTML='<div class="cat-col-label">二级类目</div>'+items2.map(n=>{
+      const isActive=catSelect[1]===n;
+      const hasSub=!!CAT_L3[n];
+      return`<div class="cat-item${isActive?' active':''}" onclick="clickCat(1,'${n}')"><div class="cat-check"></div><div class="cat-name">${n}</div>${hasSub?'<div class="cat-arrow">›</div>':''}</div>`;
+    }).join('');
   } else {
-    addMsg('user','B 按关键词',()=>typing(()=>{
-      addMsg('ai',`收到！即将在所有类目中查找包含<strong>"手机"</strong>的热词，对比上周与上上周的排名变化。<br><br>正在查询，请稍等约 30 秒 ⏳`);
-      busy=false; setTimeout(runQuery,500);
-    }));
+    c2.innerHTML='<div class="cat-col-label">二级类目</div><div style="padding:16px;color:#c9cdd4;text-align:center;font-size:11px">请先选择一级类目</div>';
   }
+
+  // Column 3
+  if(catSelect[1] && CAT_L3[catSelect[1]]){
+    let items3=CAT_L3[catSelect[1]];
+    if(q) items3=items3.filter(n=>n.includes(q));
+    c3.innerHTML='<div class="cat-col-label">三级类目</div>'+items3.map(n=>{
+      const isActive=catSelect[2]===n;
+      return`<div class="cat-item${isActive?' active':''}" onclick="clickCat(2,'${n}')"><div class="cat-check"></div><div class="cat-name">${n}</div></div>`;
+    }).join('');
+  } else {
+    c3.innerHTML='<div class="cat-col-label">三级类目</div><div style="padding:16px;color:#c9cdd4;text-align:center;font-size:11px">请先选择二级类目</div>';
+  }
+
+  // Update path and button
+  updateCatPath();
+}
+
+function clickCat(level, name){
+  catSelect[level]=name;
+  // Clear downstream selections
+  for(let i=level+1;i<3;i++) catSelect[i]=null;
+  renderCatCols();
+}
+
+function onCatSearch(){
+  renderCatCols();
+}
+
+function updateCatPath(){
+  const parts=catSelect.filter(Boolean);
+  const pathEl=$('catPath'), btn=$('catConfirmBtn');
+  if(parts.length===0){
+    pathEl.innerHTML='请选择类目';
+    btn.disabled=true;
+  } else {
+    pathEl.innerHTML='已选：<strong>'+parts.join(' › ')+'</strong>';
+    btn.disabled=false;
+  }
+}
+
+function confirmCat(){
+  if(busy)return; busy=true;
+  // Disable the filter
+  const filter=$('catFilter');
+  if(filter){filter.style.pointerEvents='none';filter.style.opacity='.6'}
+
+  const parts=catSelect.filter(Boolean);
+  const pathStr=parts.join('-');
+
+  addMsg('user', pathStr, ()=>typing(()=>{
+    addMsg('ai',`收到！即将为你分析 <strong>${pathStr}</strong> 类目的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+    busy=false;
+    setTimeout(runQuery,500);
+  }));
 }
 
 // ====== Step 3: Query & Results ======
