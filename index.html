@@ -3,183 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>电商AI工具 · 交互流程演示</title>
+<title>电商AI工具 · 交互演示</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: #f0f2f5; color: #1d2129; height: 100vh; overflow: hidden; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#f0f2f5;color:#1d2129;height:100vh;overflow:hidden}
 
-  /* ========== Top Bar ========== */
-  .topbar { height: 48px; background: #fff; border-bottom: 1px solid #e5e6eb; display: flex; align-items: center; padding: 0 20px; gap: 12px; }
-  .topbar-logo { width: 28px; height: 28px; background: linear-gradient(135deg, #e4393c, #ff6b6e); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700; }
-  .topbar-title { font-size: 14px; font-weight: 600; color: #1d2129; }
-  .topbar-divider { width: 1px; height: 20px; background: #e5e6eb; }
-  .topbar-skill { font-size: 12px; color: #86909c; background: #f2f3f5; padding: 2px 10px; border-radius: 4px; }
-  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
-  .topbar-btn { font-size: 12px; color: #86909c; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: none; background: none; }
-  .topbar-btn:hover { background: #f2f3f5; }
-  .topbar-avatar { width: 28px; height: 28px; border-radius: 50%; background: #e8f3ff; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #165dff; font-weight: 600; }
+.topbar{height:48px;background:#fff;border-bottom:1px solid #e5e6eb;display:flex;align-items:center;padding:0 20px;gap:12px}
+.topbar-logo{width:28px;height:28px;background:linear-gradient(135deg,#e4393c,#ff6b6e);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.topbar-title{font-size:14px;font-weight:600;color:#1d2129}
+.topbar-divider{width:1px;height:20px;background:#e5e6eb}
+.topbar-skill{font-size:12px;color:#86909c;background:#f2f3f5;padding:2px 10px;border-radius:4px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.topbar-btn{font-size:12px;color:#86909c;cursor:pointer;padding:4px 8px;border-radius:4px;border:none;background:none}
+.topbar-btn:hover{background:#f2f3f5}
+.topbar-avatar{width:28px;height:28px;border-radius:50%;background:#e8f3ff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#165dff;font-weight:600}
 
-  /* ========== Main Layout ========== */
-  .main { display: flex; height: calc(100vh - 48px); }
+.main{display:flex;height:calc(100vh - 48px)}
 
-  /* ========== Left Chat Panel ========== */
-  .chat-panel { width: 46%; min-width: 420px; display: flex; flex-direction: column; background: #fff; border-right: 1px solid #e5e6eb; }
-  .chat-header { padding: 16px 20px 12px; border-bottom: 1px solid #f2f3f5; }
-  .chat-header h2 { font-size: 15px; font-weight: 600; color: #1d2129; }
-  .chat-header p { font-size: 12px; color: #86909c; margin-top: 2px; }
+.chat-panel{width:46%;min-width:420px;display:flex;flex-direction:column;background:#fff;border-right:1px solid #e5e6eb}
+.chat-header{padding:16px 20px 12px;border-bottom:1px solid #f2f3f5}
+.chat-header h2{font-size:15px;font-weight:600;color:#1d2129}
+.chat-header p{font-size:12px;color:#86909c;margin-top:2px}
+.chat-body{flex:1;overflow-y:auto;padding:16px 20px;scroll-behavior:smooth}
+.chat-body::-webkit-scrollbar{width:4px}
+.chat-body::-webkit-scrollbar-thumb{background:#c9cdd4;border-radius:2px}
 
-  .chat-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
-  .chat-body::-webkit-scrollbar { width: 4px; }
-  .chat-body::-webkit-scrollbar-thumb { background: #c9cdd4; border-radius: 2px; }
+.msg{margin-bottom:16px;display:flex;gap:10px;animation:msgIn .35s ease-out}
+@keyframes msgIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.msg.ai .msg-avatar{background:linear-gradient(135deg,#e4393c,#ff6b6e);color:#fff}
+.msg.user .msg-avatar{background:#e8f3ff;color:#165dff}
+.msg-bubble{max-width:85%;border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.7}
+.msg.ai .msg-bubble{background:#f7f8fa;color:#1d2129;border-top-left-radius:4px}
+.msg.user .msg-bubble{background:#165dff;color:#fff;border-top-right-radius:4px}
+.msg-bubble strong{font-weight:600}
 
-  /* Stage labels */
-  .stage-label { display: flex; align-items: center; gap: 8px; margin: 20px 0 12px; }
-  .stage-label:first-child { margin-top: 0; }
-  .stage-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
-  .stage-badge.s1 { background: #fff7e8; color: #d46b08; }
-  .stage-badge.s2 { background: #e8f7ff; color: #0070c9; }
-  .stage-badge.s3 { background: #e8ffea; color: #00893e; }
-  .stage-badge.s4 { background: #f2e8ff; color: #6b2fbd; }
-  .stage-line { flex: 1; height: 1px; background: #e5e6eb; }
+.typing-indicator{display:inline-flex;gap:4px;padding:4px 0}
+.typing-indicator span{width:6px;height:6px;border-radius:50%;background:#c9cdd4;animation:bounce .6s infinite alternate}
+.typing-indicator span:nth-child(2){animation-delay:.15s}
+.typing-indicator span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{to{transform:translateY(-6px);opacity:1}}
 
-  /* Messages */
-  .msg { margin-bottom: 16px; display: flex; gap: 10px; }
-  .msg.user { flex-direction: row-reverse; }
-  .msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
-  .msg.ai .msg-avatar { background: linear-gradient(135deg, #e4393c, #ff6b6e); color: #fff; }
-  .msg.user .msg-avatar { background: #e8f3ff; color: #165dff; }
-  .msg-bubble { max-width: 85%; border-radius: 12px; padding: 12px 16px; font-size: 13px; line-height: 1.7; }
-  .msg.ai .msg-bubble { background: #f7f8fa; color: #1d2129; border-top-left-radius: 4px; }
-  .msg.user .msg-bubble { background: #165dff; color: #fff; border-top-right-radius: 4px; }
+.option-list{margin:10px 0 4px;display:flex;flex-direction:column;gap:6px}
+.option-item{background:#fff;border:1px solid #e5e6eb;border-radius:8px;padding:8px 12px;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .15s}
+.option-item:hover{border-color:#165dff;background:#f0f5ff;transform:translateX(2px)}
+.option-item.disabled{pointer-events:none;opacity:.5}
+.option-item .opt-key{font-size:11px;font-weight:700;color:#165dff;background:#e8f3ff;padding:1px 6px;border-radius:3px;flex-shrink:0}
+.option-item .opt-label{font-weight:500;color:#1d2129}
+.option-item .opt-desc{font-size:12px;color:#86909c;margin-left:auto}
 
-  .msg-bubble strong { font-weight: 600; }
-  .msg-bubble .highlight { color: #e4393c; font-weight: 600; }
+.msg-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+.msg-table th{background:#f2f3f5;color:#4e5969;font-weight:600;padding:6px 10px;text-align:left;border-bottom:1px solid #e5e6eb}
+.msg-table td{padding:6px 10px;border-bottom:1px solid #f2f3f5;color:#1d2129;cursor:pointer;transition:background .15s}
+.msg-table tr.clickable-row:hover td{background:#f0f5ff}
+.msg-table tr.disabled-row{pointer-events:none;opacity:.5}
 
-  /* Option cards inside AI messages */
-  .option-list { margin: 10px 0 4px; display: flex; flex-direction: column; gap: 6px; }
-  .option-item { background: #fff; border: 1px solid #e5e6eb; border-radius: 8px; padding: 8px 12px; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: default; }
-  .option-item .opt-key { font-size: 11px; font-weight: 700; color: #165dff; background: #e8f3ff; padding: 1px 6px; border-radius: 3px; flex-shrink: 0; }
-  .option-item .opt-label { font-weight: 500; color: #1d2129; }
-  .option-item .opt-desc { font-size: 12px; color: #86909c; margin-left: auto; }
+.summary-card{background:#fff;border:1px solid #e5e6eb;border-radius:10px;padding:12px 16px;margin:8px 0}
+.summary-title{font-size:14px;font-weight:600;color:#1d2129;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.summary-stats{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.stat-chip{font-size:12px;padding:3px 10px;border-radius:12px;font-weight:500}
+.stat-chip.up{background:#e8ffea;color:#00893e}
+.stat-chip.down{background:#ffece8;color:#f53f3f}
+.stat-chip.flat{background:#e8f3ff;color:#165dff}
+.stat-chip.new{background:#fff7e8;color:#d46b08}
+.stat-chip.out{background:#f2f3f5;color:#86909c}
+.summary-highlight{font-size:12px;color:#4e5969;line-height:1.6}
 
-  /* Comparison table inside message */
-  .msg-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px; }
-  .msg-table th { background: #f2f3f5; color: #4e5969; font-weight: 600; padding: 6px 10px; text-align: left; border-bottom: 1px solid #e5e6eb; }
-  .msg-table td { padding: 6px 10px; border-bottom: 1px solid #f2f3f5; color: #1d2129; }
-  .msg-table tr:last-child td { border-bottom: none; }
+.result-table-wrap{background:#fff;border:1px solid #e5e6eb;border-radius:10px;overflow:hidden;margin:8px 0}
+.result-table-header{padding:8px 14px;font-size:13px;font-weight:600;color:#1d2129;border-bottom:1px solid #e5e6eb;display:flex;align-items:center;justify-content:space-between}
+.result-table-header span{font-size:11px;color:#86909c;font-weight:400}
+.result-table{width:100%;border-collapse:collapse;font-size:12px}
+.result-table th{background:#fafafa;color:#86909c;font-weight:500;padding:6px 10px;text-align:left;border-bottom:1px solid #e5e6eb;white-space:nowrap}
+.result-table td{padding:6px 10px;border-bottom:1px solid #f7f8fa;white-space:nowrap}
+.result-table tr:last-child td{border-bottom:none}
+.result-table .rank-num{font-weight:700;color:#1d2129}
+.change-up{color:#00893e;font-weight:600}
+.change-down{color:#f53f3f;font-weight:600}
+.change-flat{color:#165dff;font-weight:500}
+.change-new{color:#d46b08;font-weight:600}
+.result-table .more-row td{text-align:center;color:#165dff;font-size:12px;padding:8px;cursor:pointer}
+.result-table .more-row:hover td{background:#f0f5ff}
 
-  /* Summary card */
-  .summary-card { background: #fff; border: 1px solid #e5e6eb; border-radius: 10px; padding: 12px 16px; margin: 8px 0; }
-  .summary-title { font-size: 14px; font-weight: 600; color: #1d2129; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .summary-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
-  .stat-chip { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
-  .stat-chip.up { background: #e8ffea; color: #00893e; }
-  .stat-chip.down { background: #ffece8; color: #f53f3f; }
-  .stat-chip.flat { background: #e8f3ff; color: #165dff; }
-  .stat-chip.new { background: #fff7e8; color: #d46b08; }
-  .stat-chip.out { background: #f2f3f5; color: #86909c; }
-  .summary-highlight { font-size: 12px; color: #4e5969; line-height: 1.6; }
+.file-card{background:#fff;border:1px solid #e5e6eb;border-radius:10px;padding:12px 16px;margin:8px 0;display:flex;align-items:center;gap:12px}
+.file-icon{width:40px;height:40px;border-radius:8px;background:#e8ffea;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.file-info{flex:1}
+.file-name{font-size:13px;font-weight:600;color:#1d2129}
+.file-meta{font-size:11px;color:#86909c;margin-top:2px}
+.file-action{font-size:12px;color:#165dff;font-weight:500;cursor:pointer;padding:4px 12px;border:1px solid #165dff;border-radius:6px;background:none;white-space:nowrap;transition:all .15s}
+.file-action:hover{background:#165dff;color:#fff}
 
-  /* Inline result table (compact) */
-  .result-table-wrap { background: #fff; border: 1px solid #e5e6eb; border-radius: 10px; overflow: hidden; margin: 8px 0; }
-  .result-table-header { padding: 8px 14px; font-size: 13px; font-weight: 600; color: #1d2129; border-bottom: 1px solid #e5e6eb; display: flex; align-items: center; justify-content: space-between; }
-  .result-table-header span { font-size: 11px; color: #86909c; font-weight: 400; }
-  .result-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .result-table th { background: #fafafa; color: #86909c; font-weight: 500; padding: 6px 10px; text-align: left; border-bottom: 1px solid #e5e6eb; white-space: nowrap; }
-  .result-table td { padding: 6px 10px; border-bottom: 1px solid #f7f8fa; white-space: nowrap; }
-  .result-table tr:last-child td { border-bottom: none; }
-  .result-table .rank-num { font-weight: 700; color: #1d2129; }
-  .change-up { color: #00893e; font-weight: 600; }
-  .change-down { color: #f53f3f; font-weight: 600; }
-  .change-flat { color: #165dff; font-weight: 500; }
-  .change-new { color: #d46b08; font-weight: 600; }
-  .result-table .more-row td { text-align: center; color: #86909c; font-size: 12px; padding: 8px; }
+.next-steps{margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.next-step-item{font-size:12px;color:#4e5969;padding:6px 10px;background:#f7f8fa;border-radius:6px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:background .15s}
+.next-step-item:hover{background:#e8f3ff}
+.next-step-item .ns-num{font-size:11px;font-weight:700;color:#165dff}
 
-  /* File link card */
-  .file-card { background: #fff; border: 1px solid #e5e6eb; border-radius: 10px; padding: 12px 16px; margin: 8px 0; display: flex; align-items: center; gap: 12px; }
-  .file-icon { width: 40px; height: 40px; border-radius: 8px; background: #e8ffea; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-  .file-info { flex: 1; }
-  .file-name { font-size: 13px; font-weight: 600; color: #1d2129; }
-  .file-meta { font-size: 11px; color: #86909c; margin-top: 2px; }
-  .file-action { font-size: 12px; color: #165dff; font-weight: 500; cursor: pointer; padding: 4px 12px; border: 1px solid #165dff; border-radius: 6px; background: none; white-space: nowrap; }
+.glossary-toggle{font-size:12px;color:#165dff;cursor:pointer;margin:6px 0 2px;display:inline-flex;align-items:center;gap:4px}
+.glossary-toggle:hover{text-decoration:underline}
+.glossary-block{background:#f7f8fa;border-radius:8px;padding:10px 14px;margin:4px 0;font-size:12px;display:none}
+.glossary-block.show{display:block}
+.glossary-block table{width:100%;border-collapse:collapse}
+.glossary-block td{padding:3px 0;vertical-align:top}
+.glossary-block td:first-child{font-weight:600;color:#1d2129;width:72px;white-space:nowrap}
+.glossary-block td:last-child{color:#4e5969}
 
-  /* Next step suggestions */
-  .next-steps { margin: 8px 0; display: flex; flex-direction: column; gap: 4px; }
-  .next-step-item { font-size: 12px; color: #4e5969; padding: 6px 10px; background: #f7f8fa; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
-  .next-step-item .ns-num { font-size: 11px; font-weight: 700; color: #165dff; }
+.chat-input{padding:12px 20px;border-top:1px solid #e5e6eb;display:flex;align-items:center;gap:10px;background:#fff}
+.chat-input-box{flex:1;height:38px;border:1px solid #e5e6eb;border-radius:8px;padding:0 14px;font-size:13px;display:flex;align-items:center;background:#f7f8fa;transition:border-color .15s}
+.chat-input-box:focus-within{border-color:#165dff;background:#fff}
+.chat-input-box input{flex:1;border:none;outline:none;background:transparent;font-size:13px;color:#1d2129}
+.chat-input-box input::placeholder{color:#c9cdd4}
+.chat-send-btn{width:38px;height:38px;border-radius:8px;background:#165dff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
+.chat-send-btn:hover{opacity:.85}
+.chat-send-btn svg{width:18px;height:18px;fill:#fff}
 
-  /* Details block */
-  .glossary-toggle { font-size: 12px; color: #165dff; cursor: pointer; margin: 6px 0 2px; display: inline-flex; align-items: center; gap: 4px; }
-  .glossary-block { background: #f7f8fa; border-radius: 8px; padding: 10px 14px; margin: 4px 0; font-size: 12px; }
-  .glossary-block table { width: 100%; border-collapse: collapse; }
-  .glossary-block td { padding: 3px 0; vertical-align: top; }
-  .glossary-block td:first-child { font-weight: 600; color: #1d2129; width: 72px; white-space: nowrap; }
-  .glossary-block td:last-child { color: #4e5969; }
+.quick-actions{padding:8px 20px;border-top:1px solid #f2f3f5;background:#fafafa;display:flex;gap:6px;flex-wrap:wrap}
+.quick-action{font-size:12px;color:#4e5969;padding:4px 12px;border-radius:14px;border:1px solid #e5e6eb;background:#fff;cursor:pointer;transition:all .15s;white-space:nowrap}
+.quick-action:hover{border-color:#165dff;color:#165dff;background:#f0f5ff}
 
-  /* Chat input bar */
-  .chat-input { padding: 12px 20px; border-top: 1px solid #e5e6eb; display: flex; align-items: center; gap: 10px; background: #fff; }
-  .chat-input-box { flex: 1; height: 38px; border: 1px solid #e5e6eb; border-radius: 8px; padding: 0 14px; font-size: 13px; color: #86909c; display: flex; align-items: center; background: #f7f8fa; }
-  .chat-send-btn { width: 38px; height: 38px; border-radius: 8px; background: #165dff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .chat-send-btn svg { width: 18px; height: 18px; fill: #fff; }
+.side-panel{flex:1;display:flex;flex-direction:column;background:#fafafa;position:relative}
+.side-header{padding:12px 20px;border-bottom:1px solid #e5e6eb;background:#fff;display:flex;align-items:center;gap:10px}
+.side-tabs{display:flex;gap:0}
+.side-tab{font-size:13px;padding:6px 16px;color:#86909c;cursor:pointer;border-bottom:2px solid transparent;font-weight:500;transition:all .15s}
+.side-tab.active{color:#e4393c;border-bottom-color:#e4393c;font-weight:600}
+.side-actions{margin-left:auto;display:flex;gap:8px}
+.side-action-btn{font-size:12px;color:#4e5969;padding:4px 10px;border-radius:6px;border:1px solid #e5e6eb;background:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background .15s}
+.side-action-btn:hover{background:#f2f3f5}
 
-  /* ========== Right Side Panel ========== */
-  .side-panel { flex: 1; display: flex; flex-direction: column; background: #fafafa; }
-  .side-header { padding: 12px 20px; border-bottom: 1px solid #e5e6eb; background: #fff; display: flex; align-items: center; gap: 10px; }
-  .side-tabs { display: flex; gap: 0; }
-  .side-tab { font-size: 13px; padding: 6px 16px; color: #86909c; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; }
-  .side-tab.active { color: #e4393c; border-bottom-color: #e4393c; font-weight: 600; }
-  .side-actions { margin-left: auto; display: flex; gap: 8px; }
-  .side-action-btn { font-size: 12px; color: #4e5969; padding: 4px 10px; border-radius: 6px; border: 1px solid #e5e6eb; background: #fff; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-  .side-action-btn:hover { background: #f2f3f5; }
+.side-toolbar{padding:8px 20px;border-bottom:1px solid #e5e6eb;background:#fff;display:none;align-items:center;gap:8px}
+.side-toolbar.visible{display:flex}
+.toolbar-search{flex:1;max-width:240px;height:30px;border:1px solid #e5e6eb;border-radius:6px;padding:0 10px;font-size:12px;display:flex;align-items:center;gap:6px;background:#f7f8fa}
+.toolbar-search input{flex:1;border:none;outline:none;background:transparent;font-size:12px;color:#1d2129}
+.toolbar-search input::placeholder{color:#c9cdd4}
+.toolbar-filter{font-size:12px;color:#4e5969;padding:4px 10px;border-radius:6px;border:1px solid #e5e6eb;background:#fff;cursor:pointer;transition:all .15s}
+.toolbar-filter:hover{border-color:#e4393c}
+.toolbar-filter.active{border-color:#e4393c;color:#e4393c;background:#fff5f5}
 
-  /* Toolbar */
-  .side-toolbar { padding: 8px 20px; border-bottom: 1px solid #e5e6eb; background: #fff; display: flex; align-items: center; gap: 8px; }
-  .toolbar-search { flex: 1; max-width: 240px; height: 30px; border: 1px solid #e5e6eb; border-radius: 6px; padding: 0 10px; font-size: 12px; color: #86909c; display: flex; align-items: center; gap: 6px; background: #f7f8fa; }
-  .toolbar-filter { font-size: 12px; color: #4e5969; padding: 4px 10px; border-radius: 6px; border: 1px solid #e5e6eb; background: #fff; cursor: pointer; }
-  .toolbar-filter.active { border-color: #e4393c; color: #e4393c; background: #fff5f5; }
+.side-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#c9cdd4;gap:12px}
+.side-placeholder svg{width:64px;height:64px;opacity:.4}
+.side-placeholder p{font-size:13px}
 
-  /* Data table */
-  .side-table-wrap { flex: 1; overflow: auto; padding: 0; }
-  .side-table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
-  .side-table-wrap::-webkit-scrollbar-thumb { background: #c9cdd4; border-radius: 3px; }
-  .side-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 900px; }
-  .side-table thead th { background: #f7f8fa; color: #86909c; font-weight: 600; padding: 8px 12px; text-align: left; border-bottom: 1px solid #e5e6eb; position: sticky; top: 0; z-index: 1; white-space: nowrap; }
-  .side-table tbody td { padding: 8px 12px; border-bottom: 1px solid #f2f3f5; white-space: nowrap; }
-  .side-table tbody tr:hover { background: #f7f8fa; }
-  .side-table .col-rank { font-weight: 700; text-align: center; width: 50px; }
-  .side-table .col-keyword { font-weight: 500; color: #1d2129; min-width: 120px; }
-  .side-table .col-num { text-align: right; font-variant-numeric: tabular-nums; }
-  .side-table .col-change { font-weight: 600; text-align: center; min-width: 110px; }
-  .tag-up { display: inline-block; background: #e8ffea; color: #00893e; padding: 1px 8px; border-radius: 4px; font-size: 11px; }
-  .tag-down { display: inline-block; background: #ffece8; color: #f53f3f; padding: 1px 8px; border-radius: 4px; font-size: 11px; }
-  .tag-flat { display: inline-block; background: #e8f3ff; color: #165dff; padding: 1px 8px; border-radius: 4px; font-size: 11px; }
-  .tag-new { display: inline-block; background: #fff7e8; color: #d46b08; padding: 1px 8px; border-radius: 4px; font-size: 11px; }
+.side-table-wrap{flex:1;overflow:auto;padding:0;display:none}
+.side-table-wrap.visible{display:block}
+.side-table-wrap::-webkit-scrollbar{width:6px;height:6px}
+.side-table-wrap::-webkit-scrollbar-thumb{background:#c9cdd4;border-radius:3px}
+.side-table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+.side-table thead th{background:#f7f8fa;color:#86909c;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid #e5e6eb;position:sticky;top:0;z-index:1;white-space:nowrap}
+.side-table tbody td{padding:8px 12px;border-bottom:1px solid #f2f3f5;white-space:nowrap}
+.side-table tbody tr{transition:background .1s}
+.side-table tbody tr:hover{background:#f7f8fa}
+.side-table .col-rank{font-weight:700;text-align:center;width:50px}
+.side-table .col-kw{font-weight:500;color:#1d2129;min-width:120px}
+.side-table .col-num{text-align:right;font-variant-numeric:tabular-nums}
+.side-table .col-change{font-weight:600;text-align:center;min-width:110px}
+.tag-up{display:inline-block;background:#e8ffea;color:#00893e;padding:1px 8px;border-radius:4px;font-size:11px}
+.tag-down{display:inline-block;background:#ffece8;color:#f53f3f;padding:1px 8px;border-radius:4px;font-size:11px}
+.tag-flat{display:inline-block;background:#e8f3ff;color:#165dff;padding:1px 8px;border-radius:4px;font-size:11px}
+.tag-new{display:inline-block;background:#fff7e8;color:#d46b08;padding:1px 8px;border-radius:4px;font-size:11px}
 
-  /* Sheet tabs */
-  .sheet-tabs { padding: 8px 20px; border-top: 1px solid #e5e6eb; background: #fff; display: flex; align-items: center; gap: 0; }
-  .sheet-tab { font-size: 12px; padding: 5px 16px; cursor: pointer; color: #86909c; border: 1px solid #e5e6eb; background: #f7f8fa; font-weight: 500; }
-  .sheet-tab:first-child { border-radius: 6px 0 0 6px; }
-  .sheet-tab:last-child { border-radius: 0 6px 6px 0; }
-  .sheet-tab.active { background: #fff; color: #e4393c; border-color: #e4393c; font-weight: 600; z-index: 1; position: relative; }
-  .sheet-info { margin-left: auto; font-size: 11px; color: #c9cdd4; }
+.sheet-tabs{padding:8px 20px;border-top:1px solid #e5e6eb;background:#fff;display:none;align-items:center;gap:0}
+.sheet-tabs.visible{display:flex}
+.sheet-tab{font-size:12px;padding:5px 16px;cursor:pointer;color:#86909c;border:1px solid #e5e6eb;background:#f7f8fa;font-weight:500;transition:all .15s}
+.sheet-tab:first-child{border-radius:6px 0 0 6px}
+.sheet-tab:last-child{border-radius:0 6px 6px 0}
+.sheet-tab.active{background:#fff;color:#e4393c;border-color:#e4393c;font-weight:600;z-index:1;position:relative}
+.sheet-info{margin-left:auto;font-size:11px;color:#c9cdd4}
 
-  /* ========== Annotations ========== */
-  .annotation { position: relative; }
-  .annotation-tag { position: absolute; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; white-space: nowrap; letter-spacing: 0.5px; z-index: 2; pointer-events: none; }
-  .annotation-tag.stage1 { background: #fff7e8; color: #d46b08; border: 1px solid #ffd691; }
-  .annotation-tag.stage2 { background: #e8f7ff; color: #0070c9; border: 1px solid #91d5ff; }
-  .annotation-tag.stage3 { background: #e8ffea; color: #00893e; border: 1px solid #b7eb8f; }
-  .annotation-tag.stage4 { background: #f2e8ff; color: #6b2fbd; border: 1px solid #d3adf7; }
-
-  /* Responsive helpers */
-  @media (max-width: 1100px) {
-    .chat-panel { width: 50%; min-width: 360px; }
-  }
+.loading-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s;gap:12px}
+.loading-overlay.active{opacity:1;pointer-events:auto}
+.loading-spinner{width:32px;height:32px;border:3px solid #e5e6eb;border-top-color:#e4393c;border-radius:50%;animation:spin .8s linear infinite}
+.loading-text{font-size:13px;color:#86909c}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- ========== TOP BAR ========== -->
 <div class="topbar">
   <div class="topbar-logo">Q</div>
   <div class="topbar-title">QoderWork</div>
@@ -192,283 +189,339 @@
   </div>
 </div>
 
-<!-- ========== MAIN ========== -->
 <div class="main">
-
-  <!-- ========== LEFT: CHAT PANEL ========== -->
   <div class="chat-panel">
     <div class="chat-header">
       <h2>搜索热词排名对比分析</h2>
       <p>对比上周与上上周的行业搜索热词排行榜变化</p>
     </div>
-
-    <div class="chat-body">
-
-      <!-- ====== STAGE 1: 需求确认 ====== -->
-      <div class="stage-label">
-        <span class="stage-badge s1">① 需求确认</span>
-        <div class="stage-line"></div>
-      </div>
-
-      <div class="msg user">
-        <div class="msg-avatar">张</div>
-        <div class="msg-bubble">帮我看看最近热词排名有啥变化</div>
-      </div>
-
-      <div class="msg ai">
-        <div class="msg-avatar">AI</div>
-        <div class="msg-bubble">
-          好的，我可以帮你对比分析<strong>京东黄金眼行业搜索热词排行榜</strong>的周度变化。<br><br>
-          我能做的事情包括：
-          <div class="option-list">
-            <div class="option-item"><span class="opt-label">对比<strong>上周 vs 上上周</strong>的搜索热词 Top500 排名变化</span></div>
-            <div class="option-item"><span class="opt-label">自动标出排名 <span class="change-up">上升</span>、<span class="change-down">下降</span>、<span class="change-flat">持平</span>、新上榜、跌出榜单的关键词</span></div>
-            <div class="option-item"><span class="opt-label">按<strong>类目</strong>筛选，或按<strong>关键词</strong>模糊匹配</span></div>
-          </div>
-          <div style="font-size:12px;color:#86909c;margin-top:6px;">⚠️ 暂不支持自定义时间范围、修改关键词数据。</div>
-          <div style="margin-top:10px;font-weight:500;">👉 请告诉我你想分析什么？</div>
-          <div class="option-list">
-            <div class="option-item"><span class="opt-key">1</span><span class="opt-label">看全部类目的热词排名变化</span></div>
-            <div class="option-item"><span class="opt-key">2</span><span class="opt-label">看XX类目的热词变化</span><span class="opt-desc">如：手机通讯-手机</span></div>
-            <div class="option-item"><span class="opt-key">3</span><span class="opt-label">查包含"XX"关键词的排名变化</span><span class="opt-desc">如：包含"空调"</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ====== STAGE 2: 反问澄清 ====== -->
-      <div class="stage-label">
-        <span class="stage-badge s2">② 反问澄清</span>
-        <div class="stage-line"></div>
-      </div>
-
-      <div class="msg user">
-        <div class="msg-avatar">张</div>
-        <div class="msg-bubble">看手机相关的热词</div>
-      </div>
-
-      <div class="msg ai">
-        <div class="msg-avatar">AI</div>
-        <div class="msg-bubble">
-          "手机"可以作为<strong>类目</strong>筛选，也可以作为<strong>关键词</strong>匹配，你想要的哪种？
-          <table class="msg-table">
-            <thead><tr><th style="width:80px">选项</th><th>含义</th><th>举例</th></tr></thead>
-            <tbody>
-              <tr><td><span class="opt-key">A</span> 按类目筛选</td><td>只看"手机"这个商品分类下的所有热词</td><td style="color:#86909c">手机通讯-手机-手机</td></tr>
-              <tr><td><span class="opt-key">B</span> 按关键词匹配</td><td>在所有类目中，找包含"手机"这个词的热词</td><td style="color:#86909c">"手机壳" "手机膜" "5G手机"等</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="msg user">
-        <div class="msg-avatar">张</div>
-        <div class="msg-bubble">A 按类目</div>
-      </div>
-
-      <div class="msg ai">
-        <div class="msg-avatar">AI</div>
-        <div class="msg-bubble">
-          收到！即将为你分析 <strong>手机通讯-手机-手机</strong> 类目的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>
-          正在查询，请稍等约 30 秒 ⏳
-        </div>
-      </div>
-
-      <!-- ====== STAGE 3: 结果输出 ====== -->
-      <div class="stage-label">
-        <span class="stage-badge s3">③ 结果输出</span>
-        <div class="stage-line"></div>
-      </div>
-
-      <div class="msg ai">
-        <div class="msg-avatar">AI</div>
-        <div class="msg-bubble">
-          <!-- Summary card -->
-          <div class="summary-card">
-            <div class="summary-title">📊 上周热词排名变化分析</div>
-            <div class="summary-stats">
-              <span class="stat-chip up">🟩 126 个上升</span>
-              <span class="stat-chip down">🟥 98 个下降</span>
-              <span class="stat-chip flat">🟦 267 个持平</span>
-              <span class="stat-chip new">🆕 9 个新上榜</span>
-              <span class="stat-chip out">⬇ 6 个跌出</span>
-            </div>
-            <div class="summary-highlight">
-              上升最快的词是「折叠屏手机」（上升 83 名），新上榜词中 UV 最高的是「榴莲」（UV 654 万）。
-            </div>
-          </div>
-
-          <!-- Result table preview -->
-          <div class="result-table-wrap">
-            <div class="result-table-header">
-              关键词排名变化 <span>共 491 条 · 显示前 10 条</span>
-            </div>
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>排名</th><th>关键词</th><th>上周</th><th>上上周</th><th>变化</th><th>UV</th><th>曝光数</th><th>点击率</th><th>蓝海值</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td class="rank-num">1</td><td>手机</td><td>1</td><td>3</td><td class="change-up">🟩 上升 2 名</td><td>12,874,415</td><td>368,267,223</td><td>73.44%</td><td>17.59</td></tr>
-                <tr><td class="rank-num">2</td><td>华为手机</td><td>2</td><td>2</td><td class="change-flat">🟦 持平</td><td>8,567,890</td><td>312,345,678</td><td>70.12%</td><td>16.45</td></tr>
-                <tr><td class="rank-num">3</td><td>苹果手机</td><td>3</td><td>1</td><td class="change-down">🟥 下降 2 名</td><td>7,987,654</td><td>298,765,432</td><td>68.90%</td><td>15.87</td></tr>
-                <tr><td class="rank-num">4</td><td>小米手机</td><td>4</td><td>5</td><td class="change-up">🟩 上升 1 名</td><td>6,543,210</td><td>245,678,901</td><td>66.78%</td><td>14.92</td></tr>
-                <tr><td class="rank-num">5</td><td>手机壳</td><td>5</td><td>4</td><td class="change-down">🟥 下降 1 名</td><td>5,432,109</td><td>198,765,432</td><td>64.32%</td><td>13.56</td></tr>
-                <tr><td class="rank-num">6</td><td>5G手机</td><td>6</td><td>8</td><td class="change-up">🟩 上升 2 名</td><td>4,987,654</td><td>187,654,321</td><td>63.21%</td><td>13.08</td></tr>
-                <tr><td class="rank-num">7</td><td>折叠屏手机</td><td>7</td><td>90</td><td class="change-up">🟩 上升 83 名</td><td>4,321,098</td><td>176,543,210</td><td>61.45%</td><td>18.76</td></tr>
-                <tr><td class="rank-num">8</td><td>手机膜</td><td>8</td><td>7</td><td class="change-down">🟥 下降 1 名</td><td>3,876,543</td><td>165,432,109</td><td>59.87%</td><td>12.34</td></tr>
-                <tr><td class="rank-num">9</td><td>游戏手机</td><td>9</td><td>9</td><td class="change-flat">🟦 持平</td><td>3,543,210</td><td>154,321,098</td><td>58.90%</td><td>11.98</td></tr>
-                <tr><td class="rank-num">10</td><td>老人手机</td><td>10</td><td>12</td><td class="change-up">🟩 上升 2 名</td><td>3,210,987</td><td>143,210,987</td><td>57.65%</td><td>11.45</td></tr>
-                <tr class="more-row"><td colspan="9">… 还有 481 条数据，完整数据已导出到右侧文件 👉</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Glossary -->
-          <div class="glossary-toggle">📖 指标看不懂？点我查看名词解释</div>
-          <div class="glossary-block">
-            <table>
-              <tr><td>UV</td><td>有多少<strong>独立用户</strong>搜索了这个词（去重后）</td></tr>
-              <tr><td>曝光数</td><td>这个词在搜索结果中被<strong>展示了多少次</strong></td></tr>
-              <tr><td>点击率</td><td>看到的人里有多少<strong>点进去了</strong>（越高说明购买意图越强）</td></tr>
-              <tr><td>蓝海值</td><td>竞争程度指标，<strong>越高说明竞争越小</strong>、机会越大</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ====== STAGE 4: 引导查看 ====== -->
-      <div class="stage-label">
-        <span class="stage-badge s4">④ 引导查看</span>
-        <div class="stage-line"></div>
-      </div>
-
-      <div class="msg ai">
-        <div class="msg-avatar">AI</div>
-        <div class="msg-bubble">
-          完整数据已为你导出为 Excel 文件，包含两个 Sheet：
-          <div class="file-card">
-            <div class="file-icon">📄</div>
-            <div class="file-info">
-              <div class="file-name">热词排名对比_2026W22vsW21.xlsx</div>
-              <div class="file-meta">Sheet1「排名变化」491 条 · Sheet2「跌出榜单」6 条</div>
-            </div>
-            <button class="file-action">在副屏打开</button>
-          </div>
-
-          <div style="font-size:12px;color:#86909c;margin:8px 0 4px;">💡 <strong>小提示</strong>：</div>
-          <div style="font-size:12px;color:#4e5969;line-height:1.7;">
-            · 文件已在右侧副屏自动打开<br>
-            · 你可以用表格的<strong>筛选功能</strong>查看特定类目或排名区间<br>
-            · 想下载到电脑上，点右上角"下载"按钮即可
-          </div>
-
-          <div style="margin-top:12px;font-size:12px;font-weight:500;color:#1d2129;">还想继续分析？</div>
-          <div class="next-steps">
-            <div class="next-step-item"><span class="ns-num">1</span>"帮我看看手机类目下哪些词在涨" → 下钻到具体趋势</div>
-            <div class="next-step-item"><span class="ns-num">2</span>"把这些数据做成图表" → 生成可视化趋势图</div>
-            <div class="next-step-item"><span class="ns-num">3</span>"帮我分析为什么苹果手机排名下降了" → 业务归因分析</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="height: 20px;"></div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="quick-actions" id="quickActions">
+      <div class="quick-action" onclick="sendQuick('帮我看看最近热词排名有啥变化')">帮我看看最近热词排名有啥变化</div>
+      <div class="quick-action" onclick="sendQuick('看手机类目的热词变化')">看手机类目的热词变化</div>
+      <div class="quick-action" onclick="sendQuick('查包含空调的关键词排名变化')">查包含"空调"的关键词排名变化</div>
     </div>
-
-    <!-- Chat input bar -->
     <div class="chat-input">
-      <div class="chat-input-box">输入你想分析的内容…</div>
-      <button class="chat-send-btn">
+      <div class="chat-input-box">
+        <input type="text" id="chatInput" placeholder="输入你想分析的内容…" onkeydown="if(event.key==='Enter')sendUserInput()">
+      </div>
+      <button class="chat-send-btn" onclick="sendUserInput()">
         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- ========== RIGHT: SIDE PANEL ========== -->
   <div class="side-panel">
     <div class="side-header">
       <div class="side-tabs">
-        <div class="side-tab active">📊 数据预览</div>
-        <div class="side-tab">📈 图表</div>
+        <div class="side-tab active" id="tabData">📊 数据预览</div>
+        <div class="side-tab" id="tabChart" onclick="alert('图表功能开发中…')">📈 图表</div>
       </div>
       <div class="side-actions">
-        <button class="side-action-btn">
+        <button class="side-action-btn" onclick="alert('模拟下载：热词排名对比_2026W22vsW21.xlsx')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4e5969" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           下载
         </button>
-        <button class="side-action-btn">
+        <button class="side-action-btn" onclick="alert('已复制到剪贴板')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4e5969" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           复制
         </button>
       </div>
     </div>
 
-    <div class="side-toolbar">
+    <div class="side-toolbar" id="sideToolbar">
       <div class="toolbar-search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9cdd4" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        搜索关键词…
+        <input type="text" placeholder="搜索关键词…" id="searchInput" oninput="renderSideTable()">
       </div>
-      <button class="toolbar-filter active">全部</button>
-      <button class="toolbar-filter">🟩 上升</button>
-      <button class="toolbar-filter">🟥 下降</button>
-      <button class="toolbar-filter">🟦 持平</button>
-      <button class="toolbar-filter">🆕 新上榜</button>
+      <button class="toolbar-filter active" data-f="all" onclick="setFilter(this,'all')">全部</button>
+      <button class="toolbar-filter" data-f="up" onclick="setFilter(this,'up')">🟩 上升</button>
+      <button class="toolbar-filter" data-f="down" onclick="setFilter(this,'down')">🟥 下降</button>
+      <button class="toolbar-filter" data-f="flat" onclick="setFilter(this,'flat')">🟦 持平</button>
+      <button class="toolbar-filter" data-f="new" onclick="setFilter(this,'new')">🆕 新上榜</button>
     </div>
 
-    <div class="side-table-wrap">
-      <table class="side-table">
-        <thead>
-          <tr>
-            <th class="col-rank">排名</th>
-            <th class="col-keyword">关键词</th>
-            <th class="col-rank">上周排名</th>
-            <th class="col-rank">上上周排名</th>
-            <th class="col-change">变化</th>
-            <th class="col-num">UV</th>
-            <th class="col-num">曝光数</th>
-            <th class="col-num">点击率</th>
-            <th class="col-num">蓝海值</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="col-rank">1</td><td class="col-keyword">手机</td><td class="col-rank">1</td><td class="col-rank">3</td><td class="col-change"><span class="tag-up">🟩 上升 2 名</span></td><td class="col-num">12,874,415</td><td class="col-num">368,267,223</td><td class="col-num">73.44%</td><td class="col-num">17.59</td></tr>
-          <tr><td class="col-rank">2</td><td class="col-keyword">华为手机</td><td class="col-rank">2</td><td class="col-rank">2</td><td class="col-change"><span class="tag-flat">🟦 持平</span></td><td class="col-num">8,567,890</td><td class="col-num">312,345,678</td><td class="col-num">70.12%</td><td class="col-num">16.45</td></tr>
-          <tr><td class="col-rank">3</td><td class="col-keyword">苹果手机</td><td class="col-rank">3</td><td class="col-rank">1</td><td class="col-change"><span class="tag-down">🟥 下降 2 名</span></td><td class="col-num">7,987,654</td><td class="col-num">298,765,432</td><td class="col-num">68.90%</td><td class="col-num">15.87</td></tr>
-          <tr><td class="col-rank">4</td><td class="col-keyword">小米手机</td><td class="col-rank">4</td><td class="col-rank">5</td><td class="col-change"><span class="tag-up">🟩 上升 1 名</span></td><td class="col-num">6,543,210</td><td class="col-num">245,678,901</td><td class="col-num">66.78%</td><td class="col-num">14.92</td></tr>
-          <tr><td class="col-rank">5</td><td class="col-keyword">手机壳</td><td class="col-rank">5</td><td class="col-rank">4</td><td class="col-change"><span class="tag-down">🟥 下降 1 名</span></td><td class="col-num">5,432,109</td><td class="col-num">198,765,432</td><td class="col-num">64.32%</td><td class="col-num">13.56</td></tr>
-          <tr><td class="col-rank">6</td><td class="col-keyword">5G手机</td><td class="col-rank">6</td><td class="col-rank">8</td><td class="col-change"><span class="tag-up">🟩 上升 2 名</span></td><td class="col-num">4,987,654</td><td class="col-num">187,654,321</td><td class="col-num">63.21%</td><td class="col-num">13.08</td></tr>
-          <tr><td class="col-rank">7</td><td class="col-keyword">折叠屏手机</td><td class="col-rank">7</td><td class="col-rank">90</td><td class="col-change"><span class="tag-up">🟩 上升 83 名</span></td><td class="col-num">4,321,098</td><td class="col-num">176,543,210</td><td class="col-num">61.45%</td><td class="col-num">18.76</td></tr>
-          <tr><td class="col-rank">8</td><td class="col-keyword">手机膜</td><td class="col-rank">8</td><td class="col-rank">7</td><td class="col-change"><span class="tag-down">🟥 下降 1 名</span></td><td class="col-num">3,876,543</td><td class="col-num">165,432,109</td><td class="col-num">59.87%</td><td class="col-num">12.34</td></tr>
-          <tr><td class="col-rank">9</td><td class="col-keyword">游戏手机</td><td class="col-rank">9</td><td class="col-rank">9</td><td class="col-change"><span class="tag-flat">🟦 持平</span></td><td class="col-num">3,543,210</td><td class="col-num">154,321,098</td><td class="col-num">58.90%</td><td class="col-num">11.98</td></tr>
-          <tr><td class="col-rank">10</td><td class="col-keyword">老人手机</td><td class="col-rank">10</td><td class="col-rank">12</td><td class="col-change"><span class="tag-up">🟩 上升 2 名</span></td><td class="col-num">3,210,987</td><td class="col-num">143,210,987</td><td class="col-num">57.65%</td><td class="col-num">11.45</td></tr>
-          <tr><td class="col-rank">11</td><td class="col-keyword">OPPO手机</td><td class="col-rank">11</td><td class="col-rank">10</td><td class="col-change"><span class="tag-down">🟥 下降 1 名</span></td><td class="col-num">2,987,654</td><td class="col-num">132,109,876</td><td class="col-num">56.78%</td><td class="col-num">10.87</td></tr>
-          <tr><td class="col-rank">12</td><td class="col-keyword">vivo手机</td><td class="col-rank">12</td><td class="col-rank">14</td><td class="col-change"><span class="tag-up">🟩 上升 2 名</span></td><td class="col-num">2,876,543</td><td class="col-num">121,098,765</td><td class="col-num">55.90%</td><td class="col-num">10.45</td></tr>
-          <tr><td class="col-rank">13</td><td class="col-keyword">手机支架</td><td class="col-rank">13</td><td class="col-rank">13</td><td class="col-change"><span class="tag-flat">🟦 持平</span></td><td class="col-num">2,654,321</td><td class="col-num">110,987,654</td><td class="col-num">54.32%</td><td class="col-num">9.87</td></tr>
-          <tr><td class="col-rank">14</td><td class="col-keyword">智能手机</td><td class="col-rank">14</td><td class="col-rank">11</td><td class="col-change"><span class="tag-down">🟥 下降 3 名</span></td><td class="col-num">2,543,210</td><td class="col-num">99,876,543</td><td class="col-num">53.45%</td><td class="col-num">9.54</td></tr>
-          <tr><td class="col-rank">15</td><td class="col-keyword">手机充电宝</td><td class="col-rank">15</td><td class="col-rank">16</td><td class="col-change"><span class="tag-up">🟩 上升 1 名</span></td><td class="col-num">2,432,109</td><td class="col-num">88,765,432</td><td class="col-num">52.10%</td><td class="col-num">9.12</td></tr>
-          <tr><td class="col-rank">16</td><td class="col-keyword">一加手机</td><td class="col-rank">16</td><td class="col-rank">-</td><td class="col-change"><span class="tag-new">🆕 新上榜</span></td><td class="col-num">2,321,098</td><td class="col-num">77,654,321</td><td class="col-num">51.23%</td><td class="col-num">15.67</td></tr>
-          <tr><td class="col-rank">17</td><td class="col-keyword">拍照手机</td><td class="col-rank">17</td><td class="col-rank">15</td><td class="col-change"><span class="tag-down">🟥 下降 2 名</span></td><td class="col-num">2,210,987</td><td class="col-num">66,543,210</td><td class="col-num">50.45%</td><td class="col-num">8.76</td></tr>
-          <tr><td class="col-rank">18</td><td class="col-keyword">学生手机</td><td class="col-rank">18</td><td class="col-rank">20</td><td class="col-change"><span class="tag-up">🟩 上升 2 名</span></td><td class="col-num">2,109,876</td><td class="col-num">55,432,109</td><td class="col-num">49.87%</td><td class="col-num">8.34</td></tr>
-          <tr><td class="col-rank">19</td><td class="col-keyword">手机数据线</td><td class="col-rank">19</td><td class="col-rank">19</td><td class="col-change"><span class="tag-flat">🟦 持平</span></td><td class="col-num">1,987,654</td><td class="col-num">44,321,098</td><td class="col-num">48.90%</td><td class="col-num">7.98</td></tr>
-          <tr><td class="col-rank">20</td><td class="col-keyword">荣耀手机</td><td class="col-rank">20</td><td class="col-rank">18</td><td class="col-change"><span class="tag-down">🟥 下降 2 名</span></td><td class="col-num">1,876,543</td><td class="col-num">33,210,987</td><td class="col-num">47.65%</td><td class="col-num">7.56</td></tr>
-          <tr><td class="col-rank">21</td><td class="col-keyword">大屏手机</td><td class="col-rank">21</td><td class="col-rank">-</td><td class="col-change"><span class="tag-new">🆕 新上榜</span></td><td class="col-num">1,765,432</td><td class="col-num">22,109,876</td><td class="col-num">46.32%</td><td class="col-num">14.23</td></tr>
-          <tr><td class="col-rank">22</td><td class="col-keyword">二手手机</td><td class="col-rank">22</td><td class="col-rank">21</td><td class="col-change"><span class="tag-down">🟥 下降 1 名</span></td><td class="col-num">1,654,321</td><td class="col-num">11,098,765</td><td class="col-num">45.10%</td><td class="col-num">7.12</td></tr>
-          <tr><td class="col-rank">23</td><td class="col-keyword">手机耳机</td><td class="col-rank">23</td><td class="col-rank">23</td><td class="col-change"><span class="tag-flat">🟦 持平</span></td><td class="col-num">1,543,210</td><td class="col-num">99,876,543</td><td class="col-num">44.56%</td><td class="col-num">6.78</td></tr>
-          <tr><td class="col-rank">24</td><td class="col-keyword">超薄手机</td><td class="col-rank">24</td><td class="col-rank">25</td><td class="col-change"><span class="tag-up">🟩 上升 1 名</span></td><td class="col-num">1,432,109</td><td class="col-num">88,765,432</td><td class="col-num">43.21%</td><td class="col-num">6.34</td></tr>
-          <tr><td class="col-rank">25</td><td class="col-keyword">全网通手机</td><td class="col-rank">25</td><td class="col-rank">22</td><td class="col-change"><span class="tag-down">🟥 下降 3 名</span></td><td class="col-num">1,321,098</td><td class="col-num">77,654,321</td><td class="col-num">42.09%</td><td class="col-num">5.98</td></tr>
-        </tbody>
-      </table>
+    <div class="side-placeholder" id="sidePlaceholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#c9cdd4" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/></svg>
+      <p>对话产生数据后，这里会自动展示结果</p>
     </div>
 
-    <div class="sheet-tabs">
-      <div class="sheet-tab active">排名变化 (491条)</div>
-      <div class="sheet-tab">跌出榜单 (6条)</div>
+    <div class="side-table-wrap" id="sideTableWrap">
+      <table class="side-table"><thead><tr>
+        <th class="col-rank">排名</th><th class="col-kw">关键词</th><th class="col-rank">上周排名</th><th class="col-rank">上上周排名</th><th class="col-change">变化</th><th class="col-num">UV</th><th class="col-num">曝光数</th><th class="col-num">点击率</th><th class="col-num">蓝海值</th>
+      </tr></thead><tbody id="sideTableBody"></tbody></table>
+    </div>
+
+    <div class="sheet-tabs" id="sheetTabs">
+      <div class="sheet-tab active" id="sheetMain" onclick="switchSheet('main')">排名变化 (491条)</div>
+      <div class="sheet-tab" id="sheetOut" onclick="switchSheet('out')">跌出榜单 (6条)</div>
       <div class="sheet-info">共 497 条数据 · 2 个工作表</div>
     </div>
-  </div>
 
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在查询上周与上上周的热词数据…</div>
+    </div>
+  </div>
 </div>
 
+<script>
+const KW=[
+{r:1,k:"手机",lr:1,pr:3,ch:"up",d:2,uv:"12,874,415",ex:"368,267,223",ct:"73.44%",bl:"17.59"},
+{r:2,k:"华为手机",lr:2,pr:2,ch:"flat",d:0,uv:"8,567,890",ex:"312,345,678",ct:"70.12%",bl:"16.45"},
+{r:3,k:"苹果手机",lr:3,pr:1,ch:"down",d:2,uv:"7,987,654",ex:"298,765,432",ct:"68.90%",bl:"15.87"},
+{r:4,k:"小米手机",lr:4,pr:5,ch:"up",d:1,uv:"6,543,210",ex:"245,678,901",ct:"66.78%",bl:"14.92"},
+{r:5,k:"手机壳",lr:5,pr:4,ch:"down",d:1,uv:"5,432,109",ex:"198,765,432",ct:"64.32%",bl:"13.56"},
+{r:6,k:"5G手机",lr:6,pr:8,ch:"up",d:2,uv:"4,987,654",ex:"187,654,321",ct:"63.21%",bl:"13.08"},
+{r:7,k:"折叠屏手机",lr:7,pr:90,ch:"up",d:83,uv:"4,321,098",ex:"176,543,210",ct:"61.45%",bl:"18.76"},
+{r:8,k:"手机膜",lr:8,pr:7,ch:"down",d:1,uv:"3,876,543",ex:"165,432,109",ct:"59.87%",bl:"12.34"},
+{r:9,k:"游戏手机",lr:9,pr:9,ch:"flat",d:0,uv:"3,543,210",ex:"154,321,098",ct:"58.90%",bl:"11.98"},
+{r:10,k:"老人手机",lr:10,pr:12,ch:"up",d:2,uv:"3,210,987",ex:"143,210,987",ct:"57.65%",bl:"11.45"},
+{r:11,k:"OPPO手机",lr:11,pr:10,ch:"down",d:1,uv:"2,987,654",ex:"132,109,876",ct:"56.78%",bl:"10.87"},
+{r:12,k:"vivo手机",lr:12,pr:14,ch:"up",d:2,uv:"2,876,543",ex:"121,098,765",ct:"55.90%",bl:"10.45"},
+{r:13,k:"手机支架",lr:13,pr:13,ch:"flat",d:0,uv:"2,654,321",ex:"110,987,654",ct:"54.32%",bl:"9.87"},
+{r:14,k:"智能手机",lr:14,pr:11,ch:"down",d:3,uv:"2,543,210",ex:"99,876,543",ct:"53.45%",bl:"9.54"},
+{r:15,k:"手机充电宝",lr:15,pr:16,ch:"up",d:1,uv:"2,432,109",ex:"88,765,432",ct:"52.10%",bl:"9.12"},
+{r:16,k:"一加手机",lr:16,pr:null,ch:"new",d:0,uv:"2,321,098",ex:"77,654,321",ct:"51.23%",bl:"15.67"},
+{r:17,k:"拍照手机",lr:17,pr:15,ch:"down",d:2,uv:"2,210,987",ex:"66,543,210",ct:"50.45%",bl:"8.76"},
+{r:18,k:"学生手机",lr:18,pr:20,ch:"up",d:2,uv:"2,109,876",ex:"55,432,109",ct:"49.87%",bl:"8.34"},
+{r:19,k:"手机数据线",lr:19,pr:19,ch:"flat",d:0,uv:"1,987,654",ex:"44,321,098",ct:"48.90%",bl:"7.98"},
+{r:20,k:"荣耀手机",lr:20,pr:18,ch:"down",d:2,uv:"1,876,543",ex:"33,210,987",ct:"47.65%",bl:"7.56"},
+{r:21,k:"大屏手机",lr:21,pr:null,ch:"new",d:0,uv:"1,765,432",ex:"22,109,876",ct:"46.32%",bl:"14.23"},
+{r:22,k:"二手手机",lr:22,pr:21,ch:"down",d:1,uv:"1,654,321",ex:"11,098,765",ct:"45.10%",bl:"7.12"},
+{r:23,k:"手机耳机",lr:23,pr:23,ch:"flat",d:0,uv:"1,543,210",ex:"99,876,543",ct:"44.56%",bl:"6.78"},
+{r:24,k:"超薄手机",lr:24,pr:25,ch:"up",d:1,uv:"1,432,109",ex:"88,765,432",ct:"43.21%",bl:"6.34"},
+{r:25,k:"全网通手机",lr:25,pr:22,ch:"down",d:3,uv:"1,321,098",ex:"77,654,321",ct:"42.09%",bl:"5.98"}
+];
+
+const OUT=[
+{pr:45,k:"蓝牙音箱",uv:"5,432,109",ex:"176,543,210",ct:"62.34%",bl:"13.87"},
+{pr:128,k:"滚筒洗衣机",uv:"3,210,987",ex:"98,765,432",ct:"58.90%",bl:"12.45"},
+{pr:203,k:"机械键盘",uv:"2,109,876",ex:"65,432,109",ct:"54.12%",bl:"10.23"},
+{pr:356,k:"电动牙刷",uv:"1,543,210",ex:"43,210,987",ct:"49.87%",bl:"8.76"},
+{pr:412,k:"空气炸锅",uv:"987,654",ex:"32,109,876",ct:"45.65%",bl:"7.34"},
+{pr:478,k:"扫地机器人",uv:"654,321",ex:"21,098,765",ct:"42.10%",bl:"6.12"}
+];
+
+let curFilter='all', curSheet='main', busy=false;
+const $=id=>document.getElementById(id);
+const chatBody=$('chatBody');
+
+function scroll(){setTimeout(()=>chatBody.scrollTop=chatBody.scrollHeight,60)}
+
+function addMsg(type,html,cb){
+  const d=document.createElement('div');
+  d.className='msg '+type;
+  d.innerHTML=`<div class="msg-avatar">${type==='user'?'张':'AI'}</div><div class="msg-bubble">${html}</div>`;
+  chatBody.appendChild(d); scroll();
+  if(cb) setTimeout(cb,80);
+}
+
+function typing(cb){
+  const d=document.createElement('div');
+  d.className='msg ai';
+  d.innerHTML=`<div class="msg-avatar">AI</div><div class="msg-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+  chatBody.appendChild(d); scroll();
+  setTimeout(()=>{d.remove();if(cb)cb()},700+Math.random()*500);
+}
+
+function disableOpts(){document.querySelectorAll('.option-item,.clickable-row').forEach(e=>{e.style.pointerEvents='none';e.style.opacity='.5'})}
+
+// ====== Send ======
+function sendQuick(t){
+  if(busy)return; busy=true;
+  $('quickActions').style.display='none';
+  addMsg('user',t,()=>typing(()=>step1()));
+}
+function sendUserInput(){
+  const inp=$('chatInput'),t=inp.value.trim();
+  if(!t||busy)return; busy=true; inp.value='';
+  $('quickActions').style.display='none';
+  addMsg('user',t,()=>typing(()=>step1()));
+}
+
+// ====== Step 1: Capabilities ======
+function step1(){
+  addMsg('ai',`好的，我可以帮你对比分析<strong>京东黄金眼行业搜索热词排行榜</strong>的周度变化。<br><br>我能做的事情包括：
+<div class="option-list">
+<div class="option-item" style="cursor:default"><span class="opt-label">对比<strong>上周 vs 上上周</strong>的搜索热词 Top500 排名变化</span></div>
+<div class="option-item" style="cursor:default"><span class="opt-label">自动标出排名 <span class="change-up">上升</span>、<span class="change-down">下降</span>、<span class="change-flat">持平</span>、新上榜、跌出榜单</span></div>
+<div class="option-item" style="cursor:default"><span class="opt-label">按<strong>类目</strong>筛选，或按<strong>关键词</strong>模糊匹配</span></div>
+</div>
+<div style="font-size:12px;color:#86909c;margin-top:6px">⚠️ 暂不支持自定义时间范围、修改关键词数据。</div>
+<div style="margin-top:10px;font-weight:500">👉 请告诉我你想分析什么？</div>
+<div class="option-list">
+<div class="option-item" onclick="pick1(1)"><span class="opt-key">1</span><span class="opt-label">看全部类目的热词排名变化</span></div>
+<div class="option-item" onclick="pick1(2)"><span class="opt-key">2</span><span class="opt-label">看某个类目的热词变化</span><span class="opt-desc">如：手机通讯-手机</span></div>
+<div class="option-item" onclick="pick1(3)"><span class="opt-key">3</span><span class="opt-label">查包含某个关键词的排名变化</span><span class="opt-desc">如：包含"空调"</span></div>
+</div>`);
+  busy=false;
+}
+
+function pick1(n){
+  if(busy)return; busy=true; disableOpts();
+  if(n===1){
+    addMsg('user','看全部类目的热词排名变化',()=>typing(()=>{
+      addMsg('ai',`收到！即将为你分析<strong>全部类目</strong>的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+      busy=false; setTimeout(runQuery,500);
+    }));
+  } else if(n===2){
+    addMsg('user','看手机类目的热词变化',()=>typing(()=>step2_clarify()));
+  } else {
+    addMsg('user','查包含"空调"的关键词排名变化',()=>typing(()=>{
+      addMsg('ai',`收到！即将在所有类目中查找包含<strong>"空调"</strong>的热词，对比上周与上上周的排名变化。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+      busy=false; setTimeout(runQuery,500);
+    }));
+  }
+}
+
+// ====== Step 2: Clarify ======
+function step2_clarify(){
+  addMsg('ai',`"手机"可以作为<strong>类目</strong>筛选，也可以作为<strong>关键词</strong>匹配，你想要的哪种？
+<table class="msg-table">
+<thead><tr><th style="width:80px">选项</th><th>含义</th><th>举例</th></tr></thead>
+<tbody>
+<tr class="clickable-row" onclick="pickClarify('cat')"><td><span class="opt-key">A</span> 按类目筛选</td><td>只看"手机"商品分类下的所有热词</td><td style="color:#86909c">手机通讯-手机-手机</td></tr>
+<tr class="clickable-row" onclick="pickClarify('kw')"><td><span class="opt-key">B</span> 按关键词匹配</td><td>在所有类目中找包含"手机"的热词</td><td style="color:#86909c">"手机壳" "手机膜" "5G手机"</td></tr>
+</tbody></table>`);
+  busy=false;
+}
+
+function pickClarify(t){
+  if(busy)return; busy=true; disableOpts();
+  if(t==='cat'){
+    addMsg('user','A 按类目',()=>typing(()=>{
+      addMsg('ai',`收到！即将为你分析 <strong>手机通讯-手机-手机</strong> 类目的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+      busy=false; setTimeout(runQuery,500);
+    }));
+  } else {
+    addMsg('user','B 按关键词',()=>typing(()=>{
+      addMsg('ai',`收到！即将在所有类目中查找包含<strong>"手机"</strong>的热词，对比上周与上上周的排名变化。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+      busy=false; setTimeout(runQuery,500);
+    }));
+  }
+}
+
+// ====== Step 3: Query & Results ======
+function runQuery(){
+  $('loadingOverlay').classList.add('active');
+  setTimeout(()=>{
+    $('loadingOverlay').classList.remove('active');
+    showSidePanel();
+    showResults();
+  },2200);
+}
+
+function showSidePanel(){
+  $('sidePlaceholder').style.display='none';
+  $('sideToolbar').classList.add('visible');
+  $('sideTableWrap').classList.add('visible');
+  $('sheetTabs').classList.add('visible');
+  renderSideTable();
+}
+
+function renderSideTable(){
+  const tb=$('sideTableBody');
+  if(curSheet==='out'){
+    tb.innerHTML=OUT.map(k=>`<tr><td class="col-rank">-</td><td class="col-kw">${k.k}</td><td class="col-rank">-</td><td class="col-rank">${k.pr}</td><td class="col-change"><span class="tag-down">⬇ 跌出</span></td><td class="col-num">${k.uv}</td><td class="col-num">${k.ex}</td><td class="col-num">${k.ct}</td><td class="col-num">${k.bl}</td></tr>`).join('');
+    return;
+  }
+  let data=KW;
+  if(curFilter!=='all') data=data.filter(k=>k.ch===curFilter);
+  const q=($('searchInput').value||'').trim().toLowerCase();
+  if(q) data=data.filter(k=>k.k.toLowerCase().includes(q));
+  if(!data.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:#86909c;padding:20px">没有匹配的数据</td></tr>';return}
+  tb.innerHTML=data.map(k=>{
+    const pr=k.pr!==null?k.pr:'-';
+    let tag='';
+    if(k.ch==='up')tag=`<span class="tag-up">🟩 上升 ${k.d} 名</span>`;
+    else if(k.ch==='down')tag=`<span class="tag-down">🟥 下降 ${k.d} 名</span>`;
+    else if(k.ch==='flat')tag=`<span class="tag-flat">🟦 持平</span>`;
+    else tag=`<span class="tag-new">🆕 新上榜</span>`;
+    return`<tr><td class="col-rank">${k.r}</td><td class="col-kw">${k.k}</td><td class="col-rank">${k.lr}</td><td class="col-rank">${pr}</td><td class="col-change">${tag}</td><td class="col-num">${k.uv}</td><td class="col-num">${k.ex}</td><td class="col-num">${k.ct}</td><td class="col-num">${k.bl}</td></tr>`;
+  }).join('');
+}
+
+function setFilter(el,f){
+  curFilter=f;
+  document.querySelectorAll('.toolbar-filter').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderSideTable();
+}
+
+function switchSheet(s){
+  curSheet=s;
+  $('sheetMain').classList.toggle('active',s==='main');
+  $('sheetOut').classList.toggle('active',s==='out');
+  renderSideTable();
+}
+
+function showResults(){
+  let rows=KW.slice(0,8).map(k=>{
+    const pr=k.pr!==null?k.pr:'-';
+    let c='';
+    if(k.ch==='up')c=`<span class="change-up">🟩 上升 ${k.d} 名</span>`;
+    else if(k.ch==='down')c=`<span class="change-down">🟥 下降 ${k.d} 名</span>`;
+    else if(k.ch==='flat')c=`<span class="change-flat">🟦 持平</span>`;
+    else c=`<span class="change-new">🆕 新上榜</span>`;
+    return`<tr><td class="rank-num">${k.r}</td><td>${k.k}</td><td>${k.lr}</td><td>${pr}</td><td>${c}</td><td>${k.uv}</td><td>${k.ex}</td><td>${k.ct}</td><td>${k.bl}</td></tr>`;
+  }).join('');
+
+  addMsg('ai',`
+<div class="summary-card">
+<div class="summary-title">📊 上周热词排名变化分析</div>
+<div class="summary-stats">
+<span class="stat-chip up">🟩 126 个上升</span>
+<span class="stat-chip down">🟥 98 个下降</span>
+<span class="stat-chip flat">🟦 267 个持平</span>
+<span class="stat-chip new">🆕 9 个新上榜</span>
+<span class="stat-chip out">⬇ 6 个跌出</span>
+</div>
+<div class="summary-highlight">上升最快的词是「折叠屏手机」（上升 83 名），新上榜词中 UV 最高的是「大屏手机」（UV 176 万）。</div>
+</div>
+<div class="result-table-wrap">
+<div class="result-table-header">关键词排名变化 <span>共 491 条 · 显示前 8 条</span></div>
+<table class="result-table">
+<thead><tr><th>排名</th><th>关键词</th><th>上周</th><th>上上周</th><th>变化</th><th>UV</th><th>曝光数</th><th>点击率</th><th>蓝海值</th></tr></thead>
+<tbody>${rows}
+<tr class="more-row" onclick="$('sideTableWrap').scrollIntoView({behavior:'smooth'})"><td colspan="9">… 还有 483 条数据，点击在右侧副屏查看完整数据 👉</td></tr>
+</tbody></table></div>
+<div class="glossary-toggle" onclick="this.nextElementSibling.classList.toggle('show')">📖 指标看不懂？点我查看名词解释</div>
+<div class="glossary-block"><table>
+<tr><td>UV</td><td>有多少<strong>独立用户</strong>搜索了这个词（去重后）</td></tr>
+<tr><td>曝光数</td><td>这个词在搜索结果中被<strong>展示了多少次</strong></td></tr>
+<tr><td>点击率</td><td>看到的人里有多少<strong>点进去了</strong>（越高说明购买意图越强）</td></tr>
+<tr><td>蓝海值</td><td>竞争程度指标，<strong>越高说明竞争越小</strong>、机会越大</td></tr>
+</table></div>`,()=>setTimeout(showFileCard,350));
+}
+
+function showFileCard(){
+  addMsg('ai',`完整数据已为你导出为 Excel 文件，包含两个 Sheet：
+<div class="file-card">
+<div class="file-icon">📄</div>
+<div class="file-info">
+<div class="file-name">热词排名对比_2026W22vsW21.xlsx</div>
+<div class="file-meta">Sheet1「排名变化」491 条 · Sheet2「跌出榜单」6 条</div>
+</div>
+<button class="file-action" onclick="$('sideTableWrap').style.display==='block'&&window.scrollTo(0,0)">在副屏打开</button>
+</div>
+<div style="font-size:12px;color:#86909c;margin:8px 0 4px">💡 <strong>小提示</strong>：</div>
+<div style="font-size:12px;color:#4e5969;line-height:1.7">
+· 文件已在右侧副屏自动打开<br>
+· 你可以用表格的<strong>筛选功能</strong>查看特定类目的词<br>
+· 想下载到电脑上，点右上角"下载"按钮即可
+</div>
+<div style="margin-top:12px;font-size:12px;font-weight:500;color:#1d2129">还想继续分析？</div>
+<div class="next-steps">
+<div class="next-step-item" onclick="alert('下钻分析功能开发中…')"><span class="ns-num">1</span>"帮我看看手机类目下哪些词在涨" → 下钻到具体趋势</div>
+<div class="next-step-item" onclick="alert('图表功能开发中…')"><span class="ns-num">2</span>"把这些数据做成图表" → 生成可视化趋势图</div>
+<div class="next-step-item" onclick="alert('归因分析功能开发中…')"><span class="ns-num">3</span>"帮我分析为什么苹果手机排名下降了" → 业务归因分析</div>
+</div>`);
+  busy=false;
+}
+
+// ====== Welcome ======
+addMsg('ai',`你好！我是京东搜索热词分析助手 👋<br><br>我可以帮你对比<strong>上周与上上周</strong>的行业搜索热词排行榜变化，快速发现哪些词在涨、哪些在跌。<br><br>试试点击下方快捷入口，或直接输入你的需求开始吧！`);
+</script>
 </body>
 </html>
-
