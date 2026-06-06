@@ -339,13 +339,13 @@ let curFilter='all', curSheet='main', busy=false;
 const $=id=>document.getElementById(id);
 const chatBody=$('chatBody');
 
-function scroll(){setTimeout(()=>chatBody.scrollTop=chatBody.scrollHeight,60)}
+function scrollChat(){setTimeout(()=>chatBody.scrollTop=chatBody.scrollHeight,60)}
 
 function addMsg(type,html,cb){
   const d=document.createElement('div');
   d.className='msg '+type;
   d.innerHTML=`<div class="msg-avatar">${type==='user'?'张':'AI'}</div><div class="msg-bubble">${html}</div>`;
-  chatBody.appendChild(d); scroll();
+  chatBody.appendChild(d); scrollChat();
   if(cb) setTimeout(cb,80);
 }
 
@@ -353,7 +353,7 @@ function typing(cb){
   const d=document.createElement('div');
   d.className='msg ai';
   d.innerHTML=`<div class="msg-avatar">AI</div><div class="msg-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
-  chatBody.appendChild(d); scroll();
+  chatBody.appendChild(d); scrollChat();
   setTimeout(()=>{d.remove();if(cb)cb()},700+Math.random()*500);
 }
 
