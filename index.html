@@ -270,11 +270,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
       <p>对比上周与上上周的行业搜索热词排行榜变化</p>
     </div>
     <div class="chat-body" id="chatBody"></div>
-    <div class="quick-actions" id="quickActions">
-      <div class="quick-action" onclick="sendQuick('帮我看看最近热词排名有啥变化')">帮我看看最近热词排名有啥变化</div>
-      <div class="quick-action" onclick="sendQuick('看手机类目的热词变化')">看手机类目的热词变化</div>
-      <div class="quick-action" onclick="sendQuick('查包含空调的关键词排名变化')">查包含"空调"的关键词排名变化</div>
-    </div>
     <div class="chat-input">
       <div class="chat-input-box">
         <input type="text" id="chatInput" placeholder="输入你想分析的内容…" onkeydown="if(event.key==='Enter')sendUserInput()">
@@ -401,26 +396,51 @@ function typing(cb){
 
 function disableOpts(){document.querySelectorAll('.option-item,.clickable-row').forEach(e=>{e.style.pointerEvents='none';e.style.opacity='.5'})}
 
-// ====== Send ======
-function sendQuick(t){
-  if(busy)return; busy=true;
-  $('quickActions').style.display='none';
-  addMsg('user',t,()=>typing(()=>step1()));
+// ====== Route: decide which stage to go based on user input ======
+function routeInput(text){
+  const t=text.toLowerCase();
+  // Contains specific category name → go to category filter with pre-select
+  if(/手机|电脑|家电|数码|空调|冰箱|洗衣|电视|耳机|相机/.test(t)) return 'category';
+  // Contains keyword-search intent → go to keyword mode
+  if(/包含|关键词|含有/.test(t)) return 'keyword';
+  // Very vague → show capabilities + options
+  if(/看看|分析|变化|热词|排名/.test(t) && !/全部|所有|整个/.test(t)) return 'vague';
+  // Explicitly says "all" → go directly to query
+  if(/全部|所有|整个/.test(t)) return 'all';
+  return 'vague';
 }
+
+// ====== Send handlers ======
+function sendQuick(action){
+  if(busy)return; busy=true;
+  if(action==='all'){
+    addMsg('user','看全部类目的热词排名变化',()=>typing(()=>goAll()));
+  } else if(action==='category'){
+    addMsg('user','看手机类目的热词变化',()=>typing(()=>goCategory('手机通讯','手机','手机')));
+  } else if(action==='keyword'){
+    addMsg('user','查包含"空调"的关键词排名变化',()=>typing(()=>goKeyword('空调')));
+  }
+}
+
 function sendUserInput(){
   const inp=$('chatInput'),t=inp.value.trim();
   if(!t||busy)return; busy=true; inp.value='';
-  $('quickActions').style.display='none';
-  addMsg('user',t,()=>typing(()=>step1()));
+  const route=routeInput(t);
+  addMsg('user',t,()=>typing(()=>{
+    if(route==='all') goAll();
+    else if(route==='category') goCategory('手机通讯','手机','手机');
+    else if(route==='keyword') goKeyword('空调');
+    else showCapabilities();
+  }));
 }
 
-// ====== Step 1: Capabilities ======
-function step1(){
-  addMsg('ai',`好的，我可以帮你对比分析<strong>京东黄金眼行业搜索热词排行榜</strong>的周度变化。<br><br>我能做的事情包括：
+// ====== Stage 1: Show capabilities + options (only for vague input) ======
+function showCapabilities(){
+  addMsg('ai',`好的，我可以帮你对比分析<strong>京东黄金眼行业搜索热词排行榜</strong>的周度变化。<br><br>
 <div class="option-list">
-<div class="option-item" style="cursor:default"><span class="opt-label">对比<strong>上周 vs 上上周</strong>的搜索热词 Top500 排名变化</span></div>
-<div class="option-item" style="cursor:default"><span class="opt-label">自动标出排名 <span class="change-up">上升</span>、<span class="change-down">下降</span>、<span class="change-flat">持平</span>、新上榜、跌出榜单</span></div>
-<div class="option-item" style="cursor:default"><span class="opt-label">按<strong>类目</strong>筛选，或按<strong>关键词</strong>模糊匹配</span></div>
+<div class="option-item" style="cursor:default"><span class="opt-label">对比 <strong>上周 vs 上上周</strong> 搜索热词 Top500 排名变化</span></div>
+<div class="option-item" style="cursor:default"><span class="opt-label">自动标出 <span class="change-up">上升</span>、<span class="change-down">下降</span>、<span class="change-flat">持平</span>、新上榜、跌出榜单</span></div>
+<div class="option-item" style="cursor:default"><span class="opt-label">按 <strong>类目</strong> 筛选，或按 <strong>关键词</strong> 模糊匹配</span></div>
 </div>
 <div style="font-size:12px;color:#86909c;margin-top:6px">⚠️ 暂不支持自定义时间范围、修改关键词数据。</div>
 <div style="margin-top:10px;font-weight:500">👉 请告诉我你想分析什么？</div>
@@ -435,35 +455,39 @@ function step1(){
 function pick1(n){
   if(busy)return; busy=true; disableOpts();
   if(n===1){
-    addMsg('user','看全部类目的热词排名变化',()=>typing(()=>{
-      addMsg('ai',`收到！即将为你分析<strong>全部类目</strong>的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>正在查询，请稍等约 30 秒 ⏳`);
-      busy=false; setTimeout(runQuery,500);
-    }));
+    addMsg('user','看全部类目的热词排名变化',()=>typing(()=>goAll()));
   } else if(n===2){
-    addMsg('user','看手机类目的热词变化',()=>typing(()=>step2_clarify()));
+    addMsg('user','看手机类目的热词变化',()=>typing(()=>goCategory('手机通讯','手机','手机')));
   } else {
-    addMsg('user','查包含"空调"的关键词排名变化',()=>typing(()=>{
-      addMsg('ai',`收到！即将在所有类目中查找包含<strong>"空调"</strong>的热词，对比上周与上上周的排名变化。<br><br>正在查询，请稍等约 30 秒 ⏳`);
-      busy=false; setTimeout(runQuery,500);
-    }));
+    addMsg('user','查包含"空调"的关键词排名变化',()=>typing(()=>goKeyword('空调')));
   }
 }
 
-// ====== Step 2: Category Filter ======
+// ====== Stage 2: Direct execution paths ======
+function goAll(){
+  addMsg('ai',`收到！即将为你分析<strong>全部类目</strong>的搜索热词排名变化（上周 vs 上上周），取 Top500 条数据。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+  busy=false; setTimeout(runQuery,500);
+}
+
+function goKeyword(word){
+  addMsg('ai',`收到！即将在所有类目中查找包含<strong>"${word}"</strong>的热词，对比上周与上上周的排名变化。<br><br>正在查询，请稍等约 30 秒 ⏳`);
+  busy=false; setTimeout(runQuery,500);
+}
+
+function goCategory(l1,l2,l3){
+  catSelect=[l1,l2,l3];
+  addMsg('ai',`我理解你想看<strong>${l2}</strong>相关类目，已为你预选如下，请确认或修改：
+${buildCatFilter()}`);
+  busy=false;
+  renderCatCols();
+}
+
+// ====== Category Filter Component ======
 const CAT_L1=["手机通讯","电脑办公","家用电器","数码产品","图书","食品生鲜","美妆护肤","服饰内衣","运动户外","家居家装","母婴玩具","汽车用品"];
 const CAT_L2={"手机通讯":["手机","手机配件","对讲机","运营商"],"电脑办公":["笔记本","台式机","平板电脑","电脑配件","外设"],"家用电器":["空调","冰箱","洗衣机","电视","厨房电器","生活电器"],"数码产品":["耳机","相机","智能手表","音箱","存储设备"]};
 const CAT_L3={"手机":["手机","游戏手机","拍照手机","老人手机","学生手机"],"手机配件":["手机壳","手机膜","数据线","充电器","充电宝"],"空调":["壁挂式空调","柜式空调","中央空调","移动空调"],"笔记本":["轻薄本","游戏本","商务本","创意PC"],"耳机":["有线耳机","蓝牙耳机","头戴式耳机","运动耳机"]};
 
 let catSelect=[null,null,null];
-
-function step2_clarify(){
-  // Pre-select 手机通讯 > 手机 > 手机 based on user intent
-  catSelect=["手机通讯","手机","手机"];
-  addMsg('ai',`我理解你想看<strong>手机</strong>相关类目，已为你预选如下，请确认或修改：
-${buildCatFilter()}`);
-  busy=false;
-  renderCatCols();
-}
 
 function buildCatFilter(){
   return `<div class="cat-filter" id="catFilter">
@@ -658,25 +682,18 @@ function showResults(){
 <tr><td>曝光数</td><td>这个词在搜索结果中被<strong>展示了多少次</strong></td></tr>
 <tr><td>点击率</td><td>看到的人里有多少<strong>点进去了</strong>（越高说明购买意图越强）</td></tr>
 <tr><td>蓝海值</td><td>竞争程度指标，<strong>越高说明竞争越小</strong>、机会越大</td></tr>
-</table></div>`,()=>setTimeout(showFileCard,350));
-}
-
-function showFileCard(){
-  addMsg('ai',`完整数据已为你导出为 Excel 文件，包含两个 Sheet：
+</table></div>
+<div style="margin-top:12px;padding-top:10px;border-top:1px solid #e5e6eb">
 <div class="file-card">
 <div class="file-icon">📄</div>
 <div class="file-info">
 <div class="file-name">热词排名对比_2026W22vsW21.xlsx</div>
-<div class="file-meta">Sheet1「排名变化」491 条 · Sheet2「跌出榜单」6 条</div>
+<div class="file-meta">Sheet1「排名变化」491 条 · Sheet2「跌出榜单」6 条 · 已在右侧副屏打开</div>
 </div>
-<button class="file-action" onclick="$('sideTableWrap').style.display==='block'&&window.scrollTo(0,0)">在副屏打开</button>
+<button class="file-action" onclick="alert('模拟下载：热词排名对比_2026W22vsW21.xlsx')">下载文件</button>
 </div>
-<div style="font-size:12px;color:#86909c;margin:8px 0 4px">💡 <strong>小提示</strong>：</div>
-<div style="font-size:12px;color:#4e5969;line-height:1.7">
-· 文件已在右侧副屏自动打开<br>
-· 你可以用表格的<strong>筛选功能</strong>查看特定类目的词<br>
-· 想下载到电脑上，点右上角"下载"按钮即可
 </div>
+<div style="font-size:12px;color:#86909c;margin:8px 0 4px">💡 你可以用副屏表格的<strong>筛选功能</strong>查看特定类目的词，或切换 Sheet 查看跌出榜单的关键词。</div>
 <div style="margin-top:12px;font-size:12px;font-weight:500;color:#1d2129">还想继续分析？</div>
 <div class="next-steps">
 <div class="next-step-item" onclick="followDrill()"><span class="ns-num">1</span>"帮我看看手机类目下哪些词在涨" → 下钻到具体趋势</div>
@@ -801,8 +818,21 @@ function followAttr(){
   }));
 }
 
-// ====== Welcome ======
-addMsg('ai',`你好！我是京东搜索热词分析助手 👋<br><br>我可以帮你对比<strong>上周与上上周</strong>的行业搜索热词排行榜变化，快速发现哪些词在涨、哪些在跌。<br><br>试试点击下方快捷入口，或直接输入你的需求开始吧！`);
+// ====== Welcome (Stage 1: 需求确认) ======
+addMsg('ai',`你好！我可以帮你对比分析<strong>京东黄金眼行业搜索热词排行榜</strong>的周度变化 👋<br><br>
+我能做的事情：
+<div style="margin:8px 0 0 4px;line-height:2">
+<div style="font-size:13.5px;color:#1d2129">📊 对比 <strong>上周 vs 上上周</strong> 搜索热词 Top500 排名变化</div>
+<div style="font-size:13.5px;color:#1d2129">🏷️ 自动标出 <span class="change-up">上升</span>、<span class="change-down">下降</span>、<span class="change-flat">持平</span>、新上榜、跌出榜单</div>
+<div style="font-size:13.5px;color:#1d2129">🔍 按 <strong>类目</strong> 筛选，或按 <strong>关键词</strong> 模糊匹配</div>
+</div>
+<div style="font-size:12px;color:#86909c;margin-top:6px">⚠️ 暂不支持自定义时间范围、修改关键词数据。</div>
+<div style="margin-top:10px;font-weight:500">👉 请告诉我你想分析什么？</div>
+<div class="option-list">
+<div class="option-item" onclick="sendQuick('all')"><span class="opt-key">1</span><span class="opt-label">看全部类目的热词排名变化</span></div>
+<div class="option-item" onclick="sendQuick('category')"><span class="opt-key">2</span><span class="opt-label">看某个类目的热词变化</span><span class="opt-desc">如：手机通讯-手机</span></div>
+<div class="option-item" onclick="sendQuick('keyword')"><span class="opt-key">3</span><span class="opt-label">查包含某个关键词的排名变化</span><span class="opt-desc">如：包含"空调"</span></div>
+</div>`);
 </script>
 </body>
 </html>
